@@ -1,4 +1,4 @@
-package com.struts.tool;
+package com.struts.tool.helpers;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,7 +10,7 @@ import java.io.IOException;
  *
  * @author maycon
  */
-public class FileUtil {
+public class FileHelper {
     public static String toString(String filename) {
         try {
             File file = new File(filename);

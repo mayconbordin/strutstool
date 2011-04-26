@@ -1,4 +1,4 @@
-package com.struts.tool;
+package com.struts.tool.helpers;
 
 import java.io.File;
 import java.io.FileInputStream;

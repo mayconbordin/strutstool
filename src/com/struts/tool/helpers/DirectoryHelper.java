@@ -1,20 +1,18 @@
-package com.struts.tool;
+package com.struts.tool.helpers;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author maycon
  */
-public class Directory {
+public class DirectoryHelper {
     public static String getInstallationDirectory() {
         String path = "";
         try {
-            path = Directory.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+            path = DirectoryHelper.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
         } catch (URISyntaxException ex) {
             return null;
         }

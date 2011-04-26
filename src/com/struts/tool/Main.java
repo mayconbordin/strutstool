@@ -20,23 +20,15 @@ public class Main {
             return;
         }
 
-        if (args.length == 3) {
-            
-            // NEW -------------------------------------------------------------
-            if (args[0].equals("new")) {
-
-                // NEW PROJECT -------------------------------------------------
-                if (args[1].equals("project")) {
-                    System.out.println("Building project basic structure...");
-                    if (tool.newProject(args[2])) {
-                        System.out.println("Project '" + args[2] + "' created.");
-                    } else {
-                        System.out.println("Ocorreu um erro ao criar o projeto.");
-                    }
-                } // END: NEW PROJECT ------------------------------------------
- 
-            } // END: NEW ------------------------------------------------------
-            
+        if (args.length == 3 && args[0].equals("new")) {
+            if (args[1].equals("project")) {
+                System.out.println("Building project basic structure...");
+                if (tool.newProject(args[2])) {
+                    System.out.println("Project '" + args[2] + "' created.");
+                } else {
+                    System.out.println("Ocorreu um erro ao criar o projeto.");
+                }
+            }
         }
         
         // SCAFFOLD ------------------------------------------------------------

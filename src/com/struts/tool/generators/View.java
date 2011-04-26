@@ -1,4 +1,4 @@
-package com.struts.tool;
+package com.struts.tool.generators;
 
 import java.io.File;
 
