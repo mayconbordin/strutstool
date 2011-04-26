@@ -1,0 +1,94 @@
+<%@taglib uri="/struts-tags" prefix="s" %>
+<%@taglib uri="/struts-jquery-tags" prefix="sj" %>
+
+<h1>Index of <<entityName>></h1>
+
+<s:actionerror theme="jquery" />
+<s:actionmessage theme="jquery" />
+
+<p>
+<s:url id="addURL" action="add" namespace="/<<namespace>>" />
+<s:submit value="Add" onclick="window.location.href = '%{addURL}';" />
+</p>
+
+<sj:dialog
+    id="successRemove"
+    buttons="{
+            'OK':function() { $(this).dialog('close'); }
+            }"
+    autoOpen="false"
+    modal="true"
+    title="<<entityName>> removed!"
+>
+<<entityName>> successful removed!
+</sj:dialog>
+
+<table border="1">
+    <thead>
+        <tr>
+        	<<tableHeader>>
+            <th><s:text name="label.codigo" /></th>
+            <th><s:text name="label.cliente" /></th>
+            <th><s:text name="label.endereco" /></th>
+            <th><s:text name="label.descricao" /></th>
+            <th><s:text name="label.valorMaoObra" /></th>
+            <th><s:text name="label.valorMaterial" /></th>
+            <th><s:text name="label.total" /></th>
+            <th>Opções</th>
+        </tr>
+    </thead>
+    <tbody>
+    <s:if test="<<namespace>>List.size() > 0">
+        <s:iterator value="<<namespace>>List" >
+        <tr>
+        	<<tableContents>>
+            <td><s:property value="codigo" /></td>
+            <td><s:property value="cliente" /></td>
+            <td><s:property value="endereco" /></td>
+            <td><s:property value="descricao" /></td>
+            <td><s:property value="valorMaoObra" /></td>
+            <td><s:property value="valorMaterial" /></td>
+            <td><s:property value="total" /></td>
+            <td>
+                <!-- Create the URL for the edit and delete actions -->
+                <s:url id="editURL" action="edit" namespace="/<<namespace>>">
+                    <s:param name="id" value="%{id}"></s:param>
+                </s:url>
+                <s:url id="deleteURL" action="delete" namespace="/<<namespace>>">
+                    <s:param name="id" value="%{id}"></s:param>
+                </s:url>
+
+                <!-- Edit button -->
+                <s:submit value="Edit" onclick="window.location.href = '%{editURL}';" />
+
+                <!-- Remove dialog -->
+                <sj:dialog
+                    id="remove%{id}"
+                    buttons="{
+                            'Yes':function() {
+                                $.post('%{deleteURL}', function(data) {
+                                    $('#remove%{id}').dialog('close');
+                                    $('#successRemove').dialog('open');
+                                });
+                             },
+                            'No':function() { $(this).dialog('close'); }
+                            }"
+                    autoOpen="false"
+                    modal="true"
+                    title="Remove <<entityName>>"
+                >
+                Do you want to remove <<namespace>> ${id}?
+                </sj:dialog>
+
+                <!-- Button to open remove dialog -->
+                <sj:submit
+                    openDialog="remove%{id}"
+                    value="Remove"
+                    button="false"
+                />
+            </td>
+        </tr>
+        </s:iterator>
+    </s:if>
+    </tbody>
+</table>

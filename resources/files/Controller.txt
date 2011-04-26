@@ -1,0 +1,108 @@
+package <<packages>>.controller;
+
+import <<packages>>.model.entity.<<entityName>>;
+import <<packages>>.model.service.<<entityName>>Service;
+import <<packages>>.model.service.<<entityName>>ServiceImpl;
+import com.framework.util.struts.StrutsController;
+import com.framework.util.repository.RepositoryException;
+import com.framework.util.validator.ValidatorException;
+import com.opensymphony.xwork2.ModelDriven;
+import java.util.ArrayList;
+import java.util.List;
+
+public class <<entityName>>Controller extends StrutsController implements ModelDriven<<<entityName>>> {
+    private <<entityName>>Service <<entityNameLower>>Service;
+    private <<entityName>> <<entityNameLower>> = new <<entityName>>();
+    private List<<<entityName>>> <<entityNameLower>>List = new ArrayList();
+    private int id;
+
+    public String index() {
+        try {
+            <<entityNameLower>>List = get<<entityName>>Service().findAll("id", "asc");
+        } catch (RepositoryException ex) {
+            errorHandler(ex);
+        }
+        statusHandler();
+        return SUCCESS;
+    }
+
+    public String edit() {
+        try {
+            if (isSave()) {
+                get<<entityName>>Service().save(<<entityNameLower>>);
+                return SUCCESS_SAVE;
+            } else {
+                <<entityNameLower>> = get<<entityName>>Service().findById(id);
+            }
+        } catch (RepositoryException ex) {
+            errorHandler(ex);
+        } catch (ValidatorException ex) {
+            errorHandler(ex);
+        }
+
+        return SUCCESS;
+    }
+
+    public String add() {
+        try {
+            if (isSave()) {
+                get<<entityName>>Service().save(<<entityNameLower>>);
+                return SUCCESS_SAVE;
+            }
+        } catch (RepositoryException ex) {
+            errorHandler(ex);
+        } catch (ValidatorException ex) {
+            errorHandler(ex);
+        }
+
+        return SUCCESS;
+    }
+
+    public void delete() {
+        try {
+            get<<entityName>>Service().delete(id);
+        } catch (RepositoryException ex) {
+            errorHandler(ex);
+        }
+    }
+
+    public <<entityName>>Service get<<entityName>>Service() {
+        if (<<entityNameLower>>Service == null) {
+            set<<entityName>>Service(new <<entityName>>ServiceImpl());
+        }
+        
+        return <<entityNameLower>>Service;
+    }
+
+    public void set<<entityName>>Service(<<entityName>>Service <<entityNameLower>>Service) {
+        this.<<entityNameLower>>Service = <<entityNameLower>>Service;
+    }
+
+    public List<<<entityName>>> get<<entityName>>List() {
+        return <<entityNameLower>>List;
+    }
+
+    public void set<<entityName>>List(List<<<entityName>>> <<entityNameLower>>List) {
+        this.<<entityNameLower>>List = <<entityNameLower>>List;
+    }
+
+    public <<entityName>> get<<entityName>>() {
+        return <<entityNameLower>>;
+    }
+
+    public void set<<entityName>>(<<entityName>> <<entityNameLower>>) {
+        this.<<entityNameLower>> = <<entityNameLower>>;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public <<entityName>> getModel() {
+        return <<entityNameLower>>;
+    }
+}
