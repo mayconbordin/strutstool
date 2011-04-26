@@ -2,6 +2,8 @@ package com.struts.tool;
 
 import com.struts.tool.generators.Controller;
 import com.struts.tool.generators.Model;
+import com.struts.tool.generators.View;
+import com.struts.tool.helpers.FileHelper;
 import com.struts.tool.helpers.StringHelper;
 import com.struts.tool.helpers.ZipHelper;
 import java.io.BufferedWriter;
@@ -33,6 +35,8 @@ public class StrutsTool {
            System.out.println("Erro: " + ex.getMessage());
            status = false;
        }
+
+       changeNetbeansProjectName(name);
 
        return status;
     }
@@ -74,11 +78,8 @@ public class StrutsTool {
         model.createModel();
 
         // Create the view
-        makeView(entityName);
-    }
-
-    private void makeView(String entityName) {
-        new File("web/WEB-INF/" + entityName.toLowerCase()).mkdirs();
+        View view = new View(entityName, packages, params);
+        view.makeView();
     }
 
     private void extractParams(String[] args, boolean addId) {
@@ -91,5 +92,20 @@ public class StrutsTool {
             temp = args[i].split(":");
             params.put(temp[0], temp[1]);
         }
+    }
+
+    private void changeNetbeansProjectName(String name) {
+        String buildXml = name + "/build.xml";
+        String projectXml = name + "/nbproject/project.xml";
+
+        String buildContent = FileHelper.toString(buildXml);
+        String projectContent = FileHelper.toString(projectXml);
+
+        // Replace the tags
+        buildContent = buildContent.replaceAll("<<StandardApplication>>", name);
+        projectContent = projectContent.replaceAll("<<StandardApplication>>", name);
+
+        FileHelper.toFile(buildXml, buildContent);
+        FileHelper.toFile(projectXml, projectContent);
     }
 }

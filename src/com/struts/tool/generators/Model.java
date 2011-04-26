@@ -28,41 +28,50 @@ public class Model {
         makeEntity();
         makeMapping();
         makeRepository();
+        makeService();
+        makeValidator();
+    }
+
+    private void makeValidator() {
+        // Create the folder
+        new File("src/java/" + packages + "/model/validator").mkdirs();
     }
 
     private void makeService() {
         // Create the folder
-        new File("src/java/" + packages + "/model/repository").mkdirs();
+        new File("src/java/" + packages + "/model/service").mkdirs();
 
         // Service Interface
-        String refRepositoryPath = DirectoryHelper.getInstallationDirectory()
-                + "/resources/files/Repository.txt";
+        String refServicePath = DirectoryHelper.getInstallationDirectory()
+                + "/resources/files/Service.txt";
 
-        String repositoryContent = FileHelper.toString(refRepositoryPath);
+        String serviceContent = FileHelper.toString(refServicePath);
 
         // Replace the tags
-        repositoryContent = repositoryContent.replaceAll("<<packages>>", packages.replace("/", "."));
-        repositoryContent = repositoryContent.replaceAll("<<entityName>>", entityName);
+        serviceContent = serviceContent.replaceAll("<<packages>>", packages.replace("/", "."));
+        serviceContent = serviceContent.replaceAll("<<entityName>>", entityName);
+        serviceContent = serviceContent.replaceAll("<<entityNameLower>>", entityName.toLowerCase());
 
-        String repositoryPath = "src/java/" + packages + "/model/repository/"
-                + entityName + "Repository.java";
+        String servicePath = "src/java/" + packages + "/model/service/"
+                + entityName + "Service.java";
 
-        FileHelper.toFile(repositoryPath, repositoryContent);
+        FileHelper.toFile(servicePath, serviceContent);
 
         // Service Implementation
-        String refRepositoryHibernatePath = DirectoryHelper.getInstallationDirectory()
-                + "/resources/files/Repository.txt";
+        String refServiceImplPath = DirectoryHelper.getInstallationDirectory()
+                + "/resources/files/ServiceImpl.txt";
 
-        String repositoryHibernateContent = FileHelper.toString(refRepositoryHibernatePath);
+        String serviceImplContent = FileHelper.toString(refServiceImplPath);
 
         // Replace the tags
-        repositoryHibernateContent = repositoryHibernateContent.replaceAll("<<packages>>", packages.replace("/", "."));
-        repositoryHibernateContent = repositoryHibernateContent.replaceAll("<<entityName>>", entityName);
+        serviceImplContent = serviceImplContent.replaceAll("<<packages>>", packages.replace("/", "."));
+        serviceImplContent = serviceImplContent.replaceAll("<<entityName>>", entityName);
+        serviceImplContent = serviceImplContent.replaceAll("<<entityNameLower>>", entityName.toLowerCase());
 
-        String repositoryHibernatePath = "src/java/" + packages + "/model/repository/"
-                + entityName + "RepositoryHibernate.java";
+        String serviceImplPath = "src/java/" + packages + "/model/service/"
+                + entityName + "ServiceImpl.java";
 
-        FileHelper.toFile(repositoryHibernatePath, repositoryHibernateContent);
+        FileHelper.toFile(serviceImplPath, serviceImplContent);
     }
 
     private void makeRepository() {
@@ -86,7 +95,7 @@ public class Model {
 
         // Hibernate Repository Implementation
         String refRepositoryHibernatePath = DirectoryHelper.getInstallationDirectory()
-                + "/resources/files/Repository.txt";
+                + "/resources/files/RepositoryHibernate.txt";
 
         String repositoryHibernateContent = FileHelper.toString(refRepositoryHibernatePath);
 
@@ -114,13 +123,15 @@ public class Model {
             String attr = entry.getKey();
             String type = entry.getValue();
 
-            properties += "<property name=\""+attr+"\" column=\""+attr+"\" ";
+            if (!attr.equals("id")) {
+                properties += "        <property name=\""+attr+"\" column=\""+attr+"\" ";
 
-            if (type.toLowerCase().equals("character") || type.toLowerCase().equals("string")) {
-                properties += "length=\"\" ";
+                if (type.toLowerCase().equals("character") || type.toLowerCase().equals("string")) {
+                    properties += "length=\"\" ";
+                }
+
+                properties += "not-null=\"true\" type=\""+type.toLowerCase()+"\"/>\n";
             }
-            
-            properties += "not-null=\"true\" type=\""+type.toLowerCase()+"\"/>\n";
         }
 
         // Replace the tags
@@ -133,6 +144,24 @@ public class Model {
                 + entityName + ".hbm.xml";
 
         FileHelper.toFile(mappingPath, mappingContent);
+
+        // Add the mapping to hibernate config file
+        addMappingToConfig();
+    }
+
+    private void addMappingToConfig() {
+        String hibernateConfig = "src/java/hibernate.cfg.xml";
+
+        String configContent = FileHelper.toString(hibernateConfig);
+
+        String resource = packages + "/model/mapping/" + entityName + ".hbm.xml";
+        String mapping = "<!-- generator:mappings -->\n"
+                       + "    <mapping resource=\""+resource+"\" />\n";
+
+        // Replace the tags
+        configContent = configContent.replaceAll("<!-- generator:mappings -->", mapping);
+
+        FileHelper.toFile(hibernateConfig, configContent);
     }
 
     private void makeEntity() {
@@ -190,13 +219,5 @@ public class Model {
         dataTypes.put("currency", "java.util.Currency");
         dataTypes.put("set", "java.util.Set");
         dataTypes.put("map", "java.util.Map");
-    }
-
-    private void makeFolder() {
-        new File("src/java/" + packages + "/model/entity").mkdirs();
-        new File("src/java/" + packages + "/model/mapping").mkdirs();
-        new File("src/java/" + packages + "/model/repository").mkdirs();
-        new File("src/java/" + packages + "/model/service").mkdirs();
-        new File("src/java/" + packages + "/model/validator").mkdirs();
     }
 }

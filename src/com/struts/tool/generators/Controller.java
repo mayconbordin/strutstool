@@ -4,7 +4,6 @@ import com.struts.tool.helpers.DirectoryHelper;
 import com.struts.tool.helpers.FileHelper;
 import com.struts.tool.helpers.StringHelper;
 import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -39,22 +38,39 @@ public class Controller {
 
     private void makeStrutsConfig() {
         String refStrutsConfigPath = DirectoryHelper.getInstallationDirectory()
-                + "/resources/files/StrutsConfigHeader.txt";
+                + "/resources/files/StrutsConfig.txt";
 
         String strutsConfig = FileHelper.toString(refStrutsConfigPath);
 
         // Replace the tags
         strutsConfig = strutsConfig.replaceAll("<<namespace>>", entityName.toLowerCase());
         strutsConfig = strutsConfig.replaceAll("<<controller>>",
-                packages.replace("/", ".") + "." + entityName);
+                packages.replace("/", ".") + ".controller." + entityName + "Controller");
 
         String strutsConfigPath = path + entityName + "Controller.xml";
 
         FileHelper.toFile(strutsConfigPath, strutsConfig);
+
+        addConfigToStrutsConf();
+    }
+
+    private void addConfigToStrutsConf() {
+        String strutsConfig = "src/java/struts.xml";
+
+        String configContent = FileHelper.toString(strutsConfig);
+
+        String file = packages + "/controller/" + entityName + "Controller.xml";
+        String include = "<!-- generator:includes -->\n"
+                       + "    <include file=\""+file+"\"/>\n";
+
+        // Replace the tags
+        configContent = configContent.replaceAll("<!-- generator:includes -->", include);
+
+        FileHelper.toFile(strutsConfig, configContent);
     }
 
     private void makeProperties() {
-        String labels = "";
+        String labels = "label.save=Save\n";
         String invalids = "";
         String required = "";
 
