@@ -5,7 +5,8 @@ import java.util.Map;
 
 /**
  *
- * @author maycon
+ * @author mayconbordin
+ * @version 0.1
  */
 public class DataTypeCollection {
     public static final Map<String, DataType> types = new HashMap<String, DataType>();
@@ -15,7 +16,9 @@ public class DataTypeCollection {
         types.put("integer", new DataType("integer", "int", null, "integer"));
         types.put("double", new DataType("double", "double", null, "double"));
         types.put("string", new DataType("string", "String", null, "string"));
+        types.put("char", new DataType("char", "char", null, "character"));
         types.put("date", new DataType("date", "Date", "java.util.Date", "date"));
+        types.put("timestamp", new DataType("timestamp", "Date", "java.util.Date", "timestamp"));
         types.put("list", new DataType("list", "List", "java.util.List", null));
         types.put("currency", new DataType("currency", "Currency", "java.util.Currency", null));
         types.put("set", new DataType("set", "Set", "java.util.Set", null));

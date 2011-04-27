@@ -14,7 +14,8 @@ import java.util.Map;
 
 /**
  *
- * @author maycon
+ * @author mayconbordin
+ * @version 0.1
  */
 public class Model {
     private String packages;

@@ -2,7 +2,8 @@ package com.struts.tool.helpers;
 
 /**
  *
- * @author maycon
+ * @author mayconbordin
+ * @version 0.1
  */
 public class StringHelper {
     public static String firstToUpperCase(String str) {

@@ -6,7 +6,8 @@ import java.net.URISyntaxException;
 
 /**
  *
- * @author maycon
+ * @author mayconbordin
+ * @version 0.1
  */
 public class DirectoryHelper {
     public static String getInstallationDirectory() {

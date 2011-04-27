@@ -2,7 +2,8 @@ package com.struts.tool.types;
 
 /**
  *
- * @author maycon
+ * @author mayconbordin
+ * @version 0.1
  */
 public class DataType {
     private String rawType;

@@ -2,7 +2,8 @@ package com.struts.tool;
 
 /**
  *
- * @author maycon
+ * @author mayconbordin
+ * @version 0.1
  */
 public class Messages {    
     public static String usage = "Usage:\n"
@@ -13,15 +14,17 @@ public class Messages {
             + "Scaffolding:\n"
             + "  strutstool scaffold [fullClassName] [parameter:dataType ...]\n"
             + "  Ex.: strutstool scaffold com.application.User name:String passw:String\n"
-            + "\n"
-            + "";
+            + "\n";
 
     // MESSAGES
     public static String buildingProject = "Building project...";
     public static String projectCreated = "Project {name} created!";
     public static String creatingProjectFolder = "Creating project folder...";
     public static String unzipProjectFiles = "Unzipping project basic files...";
+    public static String unzipLibFiles = "Unzipping libraries...";
     public static String configuringNetBeans = "Configuring NetBeans information...";
+    public static String removingProject = "Removing project...";
+    public static String projectRemoved = "Project removed!";
 
     public static String scaffoldingInProgress= "Scaffolding of entity {entity} in progress...";
     public static String scaffoldingDone = "Scaffolding of entity {entity} is done.";
@@ -29,9 +32,7 @@ public class Messages {
     public static String configPackAndEntityNames = "Retrieving package and entity names...";
 
     public static String creatingControllerFiles = "Generating controller files...";
-
     public static String creatingModelFiles = "Generating model files...";
-
     public static String creatingViewFiles = "Generating view files...";
 
 
@@ -39,11 +40,13 @@ public class Messages {
     public static String goToRootOfApp = "You must be on the root folder of the application to run it!";
 
     // ERRORS
-    public static String newProjectDirError = "Error while creating project directory.";
-    public static String unzipProjectError = "Error while creating the project basic structure.";
-    public static String renameNetbeansProjectError = "An error ocurred while configuring NetBeans project.";
-    public static String extractParamsError = "Error while extracting the parameters from command-line.";
+    public static String newProjectDirError = "Unable to create project directory.";
+    public static String unzipProjectError = "Project file not found, check if 'resources/project.zip' exists.";
+    public static String unzipLibError = "Libraries file not found, check if '/resources/lib.zip' exists.";
+    public static String renameNetbeansProjectError = "Unable to configure NetBeans project files.";
+    public static String extractParamsError = "Unable to retrieve parameters from command-line.";
     public static String invalidDataType = "Invalid data type: {type}.";
+    public static String removeProjectError = "Unable to remove project, remove manually.";
 
     public static String createControllerFolderError = "Unable to create the controller folders.";
     public static String createStrutsConfigError = "Unable to create struts config file for controller.";

@@ -5,44 +5,49 @@ import com.struts.tool.output.TerminalOutput;
 
 /**
  *
- * @author maycon
+ * @author mayconbordin
+ * @version 0.1
  */
 public class Main {
     private static MessageOutput out = new TerminalOutput();
    
     public static void main(String[] args) {
-        try {
-            StrutsTool tool = new StrutsTool(out);
+        StrutsTool tool = new StrutsTool(out);
 
-            if (args.length == 0) {
-                out.put(Messages.usage);
-                return;
-            }
+        if (args.length == 0) {
+            out.put(Messages.usage);
+            return;
+        }
 
-            if (args.length == 1) {
-                return;
-            }
+        if (args.length == 1) {
+            return;
+        }
 
-            if (args.length == 3 && args[0].equals("new")) {
-                if (args[1].equals("project")) {
-                    out.put(Messages.buildingProject);
+        if (args.length == 3 && args[0].equals("new")) {
+            if (args[1].equals("project")) {
+                try {
                     tool.newProject(args[2]);
-                    out.put(Messages.projectCreated.replace("{name}", args[2]));
+                } catch (StrutsToolException ex) {
+                    out.put("Error: " + ex.getMessage());
+                    try {
+                        tool.removeProject(args[2]);
+                    } catch (StrutsToolException ex1) {
+                        out.put("Error: " + ex1.getMessage());
+                    }
                 }
             }
+        }
 
-            if (args.length > 2 && args[0].equals("scaffold")) {
+        if (args.length > 2 && args[0].equals("scaffold")) {
+            try {
                 if (tool.buildXmlExists()) {
-                    out.put(Messages.scaffoldingInProgress.replace("{entity}", args[1]));
                     tool.scaffold(args);
-                    out.put(Messages.scaffoldingDone.replace("{entity}", args[1]));
                 } else {
                     out.put(Messages.goToRootOfApp);
                 }
+            } catch (StrutsToolException ex) {
+                out.put("Error: " + ex.getMessage());
             }
-            
-        } catch (StrutsToolException ex) {
-            out.put("Error: " + ex.getMessage());
         }
     }
 }

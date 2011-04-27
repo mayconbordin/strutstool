@@ -15,7 +15,8 @@ import java.util.Map;
 
 /**
  *
- * @author maycon
+ * @author mayconbordin
+ * @version 0.1
  */
 public class StrutsTool {
     private Map<String, String> params;
@@ -24,24 +25,46 @@ public class StrutsTool {
     public StrutsTool(MessageOutput out) { this.out= out; }
     
     public void newProject(String name) throws StrutsToolException {
+        out.put(Messages.buildingProject);
         out.put(Messages.creatingProjectFolder);
         File projectDir = new File(name);
         if (!projectDir.mkdir()) {
             throw new StrutsToolException(Messages.newProjectDirError);
         }
 
+        ZipHelper zip = new ZipHelper();
+
         out.put(Messages.unzipProjectFiles);
         File projectFiles = new File("resources/project.zip");
-        ZipHelper zip = new ZipHelper();
-       
         try {
             zip.unzip(projectFiles, projectDir);
         } catch (IOException ex) {
             throw new StrutsToolException(Messages.unzipProjectError, ex);
         }
 
+        out.put(Messages.unzipLibFiles);
+        File libFiles = new File("resources/lib.zip");
+        try {
+            zip.unzip(libFiles, projectDir);
+        } catch (IOException ex) {
+            throw new StrutsToolException(Messages.unzipLibError, ex);
+        }
+
         out.put(Messages.configuringNetBeans);
         changeNetbeansProjectName(name);
+
+        out.put(Messages.projectCreated.replace("{name}", name));
+    }
+
+    public void removeProject(String name) throws StrutsToolException {
+        out.put(Messages.removingProject);
+        File projectDir = new File(name);
+        if (projectDir.exists()) {
+            if (!FileHelper.deleteDir(projectDir)) {
+                throw new StrutsToolException(Messages.removeProjectError);
+            }
+        }
+        out.put(Messages.projectRemoved);
     }
 
     public boolean buildXmlExists() {
@@ -55,6 +78,7 @@ public class StrutsTool {
     }
 
     public void scaffold(String[] args) throws StrutsToolException {
+        out.put(Messages.scaffoldingInProgress.replace("{entity}", args[1]));
         out.put(Messages.extractingParams);
         extractParams(args, true);
 
@@ -85,6 +109,8 @@ public class StrutsTool {
         out.put(Messages.creatingViewFiles);
         View view = new View(entityName, packages, params, out);
         view.makeView();
+
+        out.put(Messages.scaffoldingDone.replace("{entity}", args[1]));
     }
 
     private void extractParams(String[] args, boolean addId) throws StrutsToolException {
@@ -111,13 +137,16 @@ public class StrutsTool {
             String buildXml = name + "/build.xml";
             String projectXml = name + "/nbproject/project.xml";
             String contextXml = name + "/web/META-INF/context.xml";
+
             String buildContent = FileHelper.toString(buildXml);
             String projectContent = FileHelper.toString(projectXml);
             String contextContent = FileHelper.toString(contextXml);
+
             // Replace the tags
             buildContent = buildContent.replaceAll("<<StandardApplication>>", name);
             projectContent = projectContent.replaceAll("<<StandardApplication>>", name);
             contextContent = contextContent.replaceAll("<<StandardApplication>>", name);
+            
             FileHelper.toFile(buildXml, buildContent);
             FileHelper.toFile(projectXml, projectContent);
             FileHelper.toFile(contextXml, contextContent);

@@ -14,7 +14,8 @@ import java.util.Map;
 
 /**
  *
- * @author maycon
+ * @author mayconbordin
+ * @version 0.1bordin
  */
 public class Controller {
     private String entityName;
