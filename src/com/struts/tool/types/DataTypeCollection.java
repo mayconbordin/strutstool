@@ -17,6 +17,7 @@ public class DataTypeCollection {
         types.put("double", new DataType("double", "double", null, "double"));
         types.put("string", new DataType("string", "String", null, "string"));
         types.put("char", new DataType("char", "char", null, "character"));
+        types.put("character", new DataType("char", "char", null, "character"));
         types.put("date", new DataType("date", "Date", "java.util.Date", "date"));
         types.put("timestamp", new DataType("timestamp", "Date", "java.util.Date", "timestamp"));
         types.put("list", new DataType("list", "List", "java.util.List", null));
@@ -25,13 +26,28 @@ public class DataTypeCollection {
         types.put("map", new DataType("map", "Map", "java.util.Map", null));
     }
 
+    public static DataType get(String key) {
+        key = key.toLowerCase();
+
+        for (Map.Entry<String, DataType> type : types.entrySet()) {
+            String index = type.getKey();
+            DataType dataType = type.getValue();
+
+            if (index.equals(key)) {
+                return dataType;
+            }
+        }
+
+        return null;
+    }
+
     public static boolean isValid(String key) {
         key = key.toLowerCase();
         
         for (Map.Entry<String, DataType> type : types.entrySet()) {
             String index = type.getKey();
 
-            if (index.indexOf(key) != -1) {
+            if (index.equals(key)) {
                 return true;
             }
         }

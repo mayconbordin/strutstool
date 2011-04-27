@@ -2,6 +2,7 @@ package com.struts.tool.generators;
 
 import com.struts.tool.Messages;
 import com.struts.tool.StrutsToolException;
+import com.struts.tool.attributes.Attribute;
 import com.struts.tool.helpers.DirectoryHelper;
 import com.struts.tool.helpers.FileHelper;
 import com.struts.tool.helpers.StringHelper;
@@ -10,6 +11,7 @@ import com.struts.tool.types.DataType;
 import com.struts.tool.types.DataTypeCollection;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,15 +23,15 @@ public class View {
     private String entityName;
     private String packages;
     private String path;
-    private Map<String, String> params;
+    private List<Attribute> attributes;
 
     private MessageOutput out;
 
-    public View(String entityName, String packages, Map<String, String> params, MessageOutput out) {
+    public View(String entityName, String packages, List<Attribute> attributes, MessageOutput out) {
         this.entityName = entityName;
         this.packages = packages;
         this.path = "web/WEB-INF/" + entityName.toLowerCase();
-        this.params = params;
+        this.attributes = attributes;
     }
 
     public void makeView() throws StrutsToolException {
@@ -59,9 +61,7 @@ public class View {
 
             String tableHeader = "";
             String tableContents = "";
-            for (Map.Entry<String, String> entry : params.entrySet()) {
-                String attr = entry.getKey();
-
+            for (Attribute attr : attributes) {
                 tableHeader += "            <th><s:text name=\"label."+attr+"\" /></th>\n";
                 tableContents += "            <td><s:property value=\""+attr+"\" /></td>\n";
             }
@@ -126,15 +126,15 @@ public class View {
             String pageContent = FileHelper.toString(refPagePath);
 
             String inputs = "";
-            for (Map.Entry<String, String> entry : params.entrySet()) {
-                String attr = entry.getKey();
-                DataType type = DataTypeCollection.types.get(entry.getValue().toLowerCase());
+            for (Attribute attr : attributes) {
+                //String attr = entry.getKey();
+                //DataType type = DataTypeCollection.types.get(entry.getValue().toLowerCase());
 
-                if (!attr.equals("id")) {
+                if (!attr.getName().equals("id")) {
                     inputs += "    <p>\n"
                             + "        <s:label key=\"label."+attr+"\" />\n";
 
-                    if (type.getRawType().equals("date")) {
+                    if (attr.getType().getRawType().equals("date")) {
                         inputs += "        <sj:datepicker name=\""+attr+"\" "
                                 + "displayFormat=\"dd/mm/yy\" />\n";
                     } else {

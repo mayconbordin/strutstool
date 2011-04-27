@@ -2,6 +2,7 @@ package com.struts.tool.generators;
 
 import com.struts.tool.Messages;
 import com.struts.tool.StrutsToolException;
+import com.struts.tool.attributes.Attribute;
 import com.struts.tool.helpers.DirectoryHelper;
 import com.struts.tool.helpers.FileHelper;
 import com.struts.tool.helpers.StringHelper;
@@ -10,6 +11,7 @@ import com.struts.tool.types.DataType;
 import com.struts.tool.types.DataTypeCollection;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,14 +22,14 @@ import java.util.Map;
 public class Model {
     private String packages;
     private String entityName;
-    private Map<String, String> params;
+    private List<Attribute> attributes;
 
     private MessageOutput out;
 
-    public Model(String entityName, String packages, Map<String, String> params, MessageOutput out) {
+    public Model(String entityName, String packages, List<Attribute> attributes, MessageOutput out) {
         this.packages = packages;
         this.entityName = entityName;
-        this.params = params;
+        this.attributes = attributes;
         this.out = out;
     }
 
@@ -155,18 +157,22 @@ public class Model {
             String mappingContent = FileHelper.toString(refMappingPath);
 
             String properties = "";
-            for (Map.Entry<String, String> entry : params.entrySet()) {
-                String attr = entry.getKey();
-                String type = entry.getValue();
+            for (Attribute attr : attributes) {
+                //String attr = entry.getKey();
+                //String type = entry.getValue();
                 
-                if (!attr.equals("id")) {
-                    properties += "        <property name=\""+attr+"\" column=\""+attr+"\" ";
+                if (!attr.getName().equals("id")) {
+                    properties += "        <property name=\""+attr+"\" column=\""
+                                + ""+attr+"\" ";
 
-                    if (type.toLowerCase().equals("character") || type.toLowerCase().equals("string")) {
+                    if (attr.getType().getRawType().equals("char") 
+                            || attr.getType().getRawType().equals("string")
+                            || attr.getType().getRawType().equals("character")) {
                         properties += "length=\"\" ";
                     }
 
-                    properties += "not-null=\"true\" type=\""+type.toLowerCase()+"\"/>\n";
+                    properties += "not-null=\"true\" type=\""
+                                + attr.getType().getHibernateType()+"\"/>\n";
                 }
             }
 
@@ -223,38 +229,35 @@ public class Model {
             String entityContent = FileHelper.toString(refEntityPath);
 
             // Create the attributes, getters and setters
-            String attributes = "";
+            String attribs = "";
             String accessors = "";
             String imports = "";
-            for (Map.Entry<String, String> entry : params.entrySet()) {
-                String attr = entry.getKey();
-                DataType type = DataTypeCollection.types.get(entry.getValue().toLowerCase());
-
-                if (type.getJavaTypeImport() != null) {
-                    imports += "import " + type.getJavaTypeImport() + ";\n";
+            for (Attribute attr : attributes) {
+                if (attr.getType().getJavaTypeImport() != null) {
+                    imports += "import " + attr.getType().getJavaTypeImport() + ";\n";
                 }
 
-                attributes += "    private "+type+" "+attr+";\n";
+                attribs += "    private "+attr.getType()+" "+attr+";\n";
 
-                if (!attr.equals("id")) {
+                if (!attr.getName().equals("id")) {
                     accessors += "    @NotNull\n"
                                + "    @XSSFilter\n";
                 }
 
-                accessors += "    public "+type+" get"+StringHelper.firstToUpperCase(attr)+"() {\n"
-                           + "        return "+attr.toLowerCase()+";\n"
+                accessors += "    public "+attr.getType()+" get"+attr.getNameFirstUpper()+"() {\n"
+                           + "        return "+attr.getNameLower()+";\n"
                            + "    }\n"
                            + "\n"
-                           + "    public void set"+StringHelper.firstToUpperCase(attr)+"("+type+" "
-                           + attr.toLowerCase()+") {\n"
-                           + "        this."+attr.toLowerCase()+" = "+attr.toLowerCase()+";\n"
+                           + "    public void set"+attr.getNameFirstUpper()+"("+attr.getType()+" "
+                           + attr.getNameLower()+") {\n"
+                           + "        this."+attr.getNameLower()+" = "+attr.getNameLower()+";\n"
                            + "    }\n";
             }
 
             // Replace the tags
             entityContent = entityContent.replaceAll("<<packages>>", packages.replace("/", "."));
             entityContent = entityContent.replaceAll("<<entityName>>", entityName);
-            entityContent = entityContent.replaceAll("<<attributes>>", attributes);
+            entityContent = entityContent.replaceAll("<<attributes>>", attribs);
             entityContent = entityContent.replaceAll("<<accessors>>", accessors);
             entityContent = entityContent.replaceAll("<<imports>>", imports);
 

@@ -2,6 +2,7 @@ package com.struts.tool.generators;
 
 import com.struts.tool.Messages;
 import com.struts.tool.StrutsToolException;
+import com.struts.tool.attributes.Attribute;
 import com.struts.tool.helpers.DirectoryHelper;
 import com.struts.tool.helpers.FileHelper;
 import com.struts.tool.helpers.StringHelper;
@@ -10,6 +11,7 @@ import com.struts.tool.types.DataType;
 import com.struts.tool.types.DataTypeCollection;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,15 +23,15 @@ public class Controller {
     private String entityName;
     private String packages;
     private String path;
-    private Map<String, String> params;
+    private List<Attribute> attributes;
 
     private MessageOutput out;
 
-    public Controller(String entityName, String packages, Map<String, String> params, MessageOutput out) {
+    public Controller(String entityName, String packages, List<Attribute> attributes, MessageOutput out) {
         this.entityName = entityName;
         this.packages = packages;
         this.path = "src/java/" + packages + "/controller/";
-        this.params = params;
+        this.attributes = attributes;
         this.out = out;
     }
 
@@ -101,13 +103,15 @@ public class Controller {
             String invalids = "";
             String required = "";
 
-            for (Map.Entry<String, String> entry : params.entrySet()) {
-                String attr = entry.getKey();
-                DataType type = DataTypeCollection.types.get(entry.getValue().toLowerCase());
+            for (Attribute attr : attributes) {
+                labels += "label." + attr + "="
+                        + attr.getNameFirstUpper() + "\n";
 
-                labels += "label." + attr + "=" + StringHelper.firstToUpperCase(attr) + "\n";
-                invalids += "invalid.fieldvalue." + attr + "=Invalid data type, should be an "+type+"\n";
-                required += attr + ".required=" + StringHelper.firstToUpperCase(attr) + " field is required\n";
+                invalids += "invalid.fieldvalue." + attr + "=Invalid data type,"
+                          + " should be an "+attr.getType()+"\n";
+                
+                required += attr + ".required=" + attr.getNameFirstUpper()
+                          + " field is required\n";
             }
 
             String status = "status.success="+entityName+" successfully saved!\n"
@@ -116,7 +120,8 @@ public class Controller {
                           + "\n"
                           + "status.notFound="+entityName+" does not exist!";
 
-            String properties = labels + "\n" + invalids + "\n" + required + "\n" + status;
+            String properties = labels + "\n" + invalids + "\n" + required + "\n"
+                              + status;
 
             String propertiesPath = path + entityName + "Controller.properties";
 
@@ -134,8 +139,7 @@ public class Controller {
             String validator = FileHelper.toString(refValidatorPath);
 
             String validators = "";
-            for (Map.Entry<String, String> entry : params.entrySet()) {
-                String attr = entry.getKey();
+            for (Attribute attr : attributes) {
                 validators += "    <field name=\""+attr+"\">\n\n"
                            + "    </field>\n";
             }

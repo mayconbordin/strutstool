@@ -46,6 +46,7 @@ public class Messages {
     public static String renameNetbeansProjectError = "Unable to configure NetBeans project files.";
     public static String extractParamsError = "Unable to retrieve parameters from command-line.";
     public static String invalidDataType = "Invalid data type: {type}.";
+    public static String wrongAttrFormat = "Wrong attribute declaration at {attr}.";
     public static String removeProjectError = "Unable to remove project, remove manually.";
 
     public static String createControllerFolderError = "Unable to create the controller folders.";

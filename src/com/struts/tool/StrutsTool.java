@@ -1,16 +1,20 @@
 package com.struts.tool;
 
+import com.struts.tool.attributes.Attribute;
 import com.struts.tool.generators.Controller;
 import com.struts.tool.generators.Model;
 import com.struts.tool.generators.View;
 import com.struts.tool.helpers.FileHelper;
+import com.struts.tool.helpers.IntegerHelper;
 import com.struts.tool.helpers.StringHelper;
 import com.struts.tool.helpers.ZipHelper;
 import com.struts.tool.output.MessageOutput;
+import com.struts.tool.types.DataType;
 import com.struts.tool.types.DataTypeCollection;
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,7 +23,7 @@ import java.util.Map;
  * @version 0.1
  */
 public class StrutsTool {
-    private Map<String, String> params;
+    private List<Attribute> attributes;
     private MessageOutput out;
 
     public StrutsTool(MessageOutput out) { this.out= out; }
@@ -97,38 +101,65 @@ public class StrutsTool {
 
         // Create the controllers
         out.put(Messages.creatingControllerFiles);
-        Controller controller = new Controller(entityName, packages, params, out);
+        Controller controller = new Controller(entityName, packages, attributes, out);
         controller.createModelController();
 
         // Create the model
         out.put(Messages.creatingModelFiles);
-        Model model = new Model(entityName, packages, params, out);
+        Model model = new Model(entityName, packages, attributes, out);
         model.createModel();
 
         // Create the view
         out.put(Messages.creatingViewFiles);
-        View view = new View(entityName, packages, params, out);
+        View view = new View(entityName, packages, attributes, out);
         view.makeView();
 
         out.put(Messages.scaffoldingDone.replace("{entity}", args[1]));
     }
 
     private void extractParams(String[] args, boolean addId) throws StrutsToolException {
-        params = new LinkedHashMap<String, String>();
-        if (addId) params.put("id", "Integer");
+        attributes = new ArrayList();
+        if (addId) {
+            attributes.add(new Attribute("id", DataTypeCollection.get("int")));
+        }
 
         String[] temp;
 
-        try {
-            for (int i = 2; i < args.length; i++) {
-                temp = args[i].split(":");
-                if (!DataTypeCollection.isValid(temp[1])) {
-                    throw new StrutsToolException(Messages.invalidDataType.replace("{type}", temp[1]));
-                }
-                params.put(temp[0], temp[1]);
+        for (int i = 2; i < args.length; i++) {
+            temp = args[i].split(":");
+            Attribute attr = new Attribute();
+
+            // Wrong attribute declaration
+            if (temp.length < 2) {
+                throw new StrutsToolException(Messages.wrongAttrFormat
+                        .replace("{attr}", temp[0]));
             }
-        } catch(ArrayIndexOutOfBoundsException ex) {
-            throw new StrutsToolException(Messages.extractParamsError, ex);
+
+            if (temp.length == 2) {
+                attr.setName(temp[0]);
+
+                DataType dt = DataTypeCollection.get(temp[1]);
+                if (dt == null) {
+                    throw new StrutsToolException(Messages.invalidDataType
+                            .replace("{type}", temp[1]));
+                }
+                attr.setType(dt);
+            }
+                
+            if (temp.length == 3) {
+                if (IntegerHelper.isInteger(temp[2])) {
+                    attr.setSize(Integer.parseInt(temp[2]));
+                } else {
+                    attr.setRelatedWith(temp[2]);
+                }
+            }
+
+            if (temp.length == 4) {
+                attr.setRelatedWith(temp[2]);
+                attr.setSize(Integer.parseInt(temp[3]));
+            }
+
+            attributes.add(attr);
         }
     }
 
