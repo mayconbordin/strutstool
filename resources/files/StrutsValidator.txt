@@ -2,5 +2,5 @@
 "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
 
 <validators>
-
+	<<validators>>
 </validators>

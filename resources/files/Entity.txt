@@ -6,6 +6,6 @@ import java.io.Serializable;
 <<imports>>
 
 public class <<entityName>> implements Serializable {
-    <<attributes>>
-    <<accessors>>
+<<attributes>>
+<<accessors>>
 }

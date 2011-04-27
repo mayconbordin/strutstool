@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="<<packages>>.model.entity.<<entityName>>" table="<<entityNameLower>>">
+		<id column="id" name="id">
+			<!-- Auto generated values may change from database to database -->
+			<!-- This works for PostgreSQL and Oracle -->
+      		<generator class="sequence">
+        		<param name="sequence"><<entityNameLower>>_id_seq</param>
+      		</generator>
+    	</id>
+<<properties>>
+  	</class>
+</hibernate-mapping>

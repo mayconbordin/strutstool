@@ -1,47 +1,48 @@
 package com.struts.tool;
 
+import com.struts.tool.output.MessageOutput;
+import com.struts.tool.output.TerminalOutput;
+
 /**
  *
  * @author maycon
  */
 public class Main {
-
-    /**
-     * @param args the command line arguments
-     */
+    private static MessageOutput out = new TerminalOutput();
+   
     public static void main(String[] args) {
-        StrutsTool tool = new StrutsTool();
+        try {
+            StrutsTool tool = new StrutsTool(out);
 
-        if (args.length == 0) {
-            return;
-        }
+            if (args.length == 0) {
+                out.put(Messages.usage);
+                return;
+            }
 
-        if (args.length == 1) {
-            return;
-        }
+            if (args.length == 1) {
+                return;
+            }
 
-        if (args.length == 3 && args[0].equals("new")) {
-            if (args[1].equals("project")) {
-                System.out.println("Building project basic structure...");
-                if (tool.newProject(args[2])) {
-                    System.out.println("Project '" + args[2] + "' created.");
-                } else {
-                    System.out.println("Ocorreu um erro ao criar o projeto.");
+            if (args.length == 3 && args[0].equals("new")) {
+                if (args[1].equals("project")) {
+                    out.put(Messages.buildingProject);
+                    tool.newProject(args[2]);
+                    out.put(Messages.projectCreated.replace("{name}", args[2]));
                 }
             }
-        }
-        
-        // SCAFFOLD ------------------------------------------------------------
-        // scaffold com.package.EntityName param1:type param2:type ...
-        if (args[0].equals("scaffold")) {
-            if (tool.buildXmlExists()) {
-                tool.scaffold(args);
-                System.out.println("Scaffolding done.");
-            } else {
-                System.out.println("You must go to the root of the application.");
+
+            if (args.length > 2 && args[0].equals("scaffold")) {
+                if (tool.buildXmlExists()) {
+                    out.put(Messages.scaffoldingInProgress.replace("{entity}", args[1]));
+                    tool.scaffold(args);
+                    out.put(Messages.scaffoldingDone.replace("{entity}", args[1]));
+                } else {
+                    out.put(Messages.goToRootOfApp);
+                }
             }
-        } // END: SCAFFOLD -----------------------------------------------------
-
+            
+        } catch (StrutsToolException ex) {
+            out.put("Error: " + ex.getMessage());
+        }
     }
-
 }

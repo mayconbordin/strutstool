@@ -1,6 +1,6 @@
 <%@taglib uri="/struts-tags" prefix="s"%>
 
-<h1>Edit <<entityName>> ${id}</h1>
+<h1>Edit <<entityName>> ${<<namespace>>Id}</h1>
 
 <div>
     <s:form action="edit" namespace="/<<namespace>>">

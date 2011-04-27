@@ -1,0 +1,10 @@
+package <<packages>>.model.repository;
+
+import <<packages>>.model.entity.<<entityName>>;
+import com.framework.util.hibernate.GenericRepositoryHibernate;
+
+public class <<entityName>>RepositoryHibernate extends GenericRepositoryHibernate<<<entityName>>, Integer> implements <<entityName>>Repository {
+    public <<entityName>>RepositoryHibernate() {
+        super(<<entityName>>.class);
+    }
+}

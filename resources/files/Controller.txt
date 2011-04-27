@@ -14,7 +14,7 @@ public class <<entityName>>Controller extends StrutsController implements ModelD
     private <<entityName>>Service <<entityNameLower>>Service;
     private <<entityName>> <<entityNameLower>> = new <<entityName>>();
     private List<<<entityName>>> <<entityNameLower>>List = new ArrayList();
-    private int id;
+    private Integer <<entityNameLower>>Id;
 
     public String index() {
         try {
@@ -32,7 +32,10 @@ public class <<entityName>>Controller extends StrutsController implements ModelD
                 get<<entityName>>Service().save(<<entityNameLower>>);
                 return SUCCESS_SAVE;
             } else {
-                <<entityNameLower>> = get<<entityName>>Service().findById(id);
+                <<entityNameLower>> = get<<entityName>>Service().findById(<<entityNameLower>>Id);
+                if (<<entityNameLower>> == null) {
+                	return NOT_FOUND;
+                }
             }
         } catch (RepositoryException ex) {
             errorHandler(ex);
@@ -60,7 +63,7 @@ public class <<entityName>>Controller extends StrutsController implements ModelD
 
     public void delete() {
         try {
-            get<<entityName>>Service().delete(id);
+            get<<entityName>>Service().delete(<<entityNameLower>>Id);
         } catch (RepositoryException ex) {
             errorHandler(ex);
         }
@@ -94,12 +97,12 @@ public class <<entityName>>Controller extends StrutsController implements ModelD
         this.<<entityNameLower>> = <<entityNameLower>>;
     }
 
-    public int getId() {
-        return id;
+    public Integer get<<entityName>>Id() {
+        return <<entityNameLower>>Id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void set<<entityName>>Id(Integer <<entityNameLower>>Id) {
+        this.<<entityNameLower>>Id = <<entityNameLower>>Id;
     }
 
     public <<entityName>> getModel() {
