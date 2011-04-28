@@ -7,12 +7,9 @@ import com.struts.tool.helpers.DirectoryHelper;
 import com.struts.tool.helpers.FileHelper;
 import com.struts.tool.helpers.StringHelper;
 import com.struts.tool.output.MessageOutput;
-import com.struts.tool.types.DataType;
-import com.struts.tool.types.DataTypeCollection;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -55,7 +52,7 @@ public class View {
     private void makeIndexPage() throws StrutsToolException {
         try {
             String refPagePath = DirectoryHelper.getInstallationDirectory()
-                    + "/resources/files/IndexView.txt";
+                    + "/resources/files/IndexView";
 
             String pageContent = FileHelper.toString(refPagePath);
 
@@ -83,7 +80,7 @@ public class View {
     private void makeAddPage() throws StrutsToolException {
         try {
             String refPagePath = DirectoryHelper.getInstallationDirectory()
-                    + "/resources/files/AddView.txt";
+                    + "/resources/files/AddView";
 
             String pageContent = FileHelper.toString(refPagePath);
 
@@ -102,7 +99,7 @@ public class View {
     private void makeEditPage() throws StrutsToolException {
         try {
             String refPagePath = DirectoryHelper.getInstallationDirectory()
-                    + "/resources/files/EditView.txt";
+                    + "/resources/files/EditView";
 
             String pageContent = FileHelper.toString(refPagePath);
 
@@ -121,7 +118,7 @@ public class View {
     private void makeFormPage() throws StrutsToolException {
         try {
             String refPagePath = DirectoryHelper.getInstallationDirectory()
-                    + "/resources/files/FormView.txt";
+                    + "/resources/files/FormView";
 
             String pageContent = FileHelper.toString(refPagePath);
 

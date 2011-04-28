@@ -1,0 +1,65 @@
+package <<packages>>.model.service;
+
+import <<packages>>.model.repository.<<entityName>>Repository;
+import <<packages>>.model.repository.<<entityName>>RepositoryHibernate;
+import <<packages>>.model.entity.<<entityName>>;
+import com.framework.util.repository.RepositoryException;
+import com.framework.util.validator.Validator;
+import com.framework.util.validator.ValidatorException;
+import java.util.List;
+
+public class <<entityName>>ServiceImpl implements <<entityName>>Service {
+    private <<entityName>>Repository <<entityNameLower>>Repository;
+    private Validator <<entityNameLower>>Validator;
+
+    public <<entityName>>ServiceImpl() {}
+
+    public <<entityName>>ServiceImpl(<<entityName>>Repository <<entityNameLower>>Repository) {
+        this.<<entityNameLower>>Repository = <<entityNameLower>>Repository;
+    }
+
+    public void save(<<entityName>> <<entityNameLower>>) throws RepositoryException, ValidatorException {
+        get<<entityName>>Validator().validate(<<entityNameLower>>);
+        get<<entityName>>Repository().save(<<entityNameLower>>);
+    }
+
+    public void delete(Integer id) throws RepositoryException {
+        <<entityName>> <<entityNameLower>> = get<<entityName>>Repository().findById(id);
+        get<<entityName>>Repository().delete(<<entityNameLower>>);
+    }
+
+    public List<<<entityName>>> findAll() throws RepositoryException {
+        return get<<entityName>>Repository().findAll();
+    }
+
+    public List<<<entityName>>> findAll(String orderBy, String orderType) throws RepositoryException {
+        return get<<entityName>>Repository().findAll(orderBy, orderType);
+    }
+
+    public <<entityName>> findById(Integer id) throws RepositoryException {
+        return get<<entityName>>Repository().findById(id);
+    }
+
+    public <<entityName>>Repository get<<entityName>>Repository() {
+        if (<<entityNameLower>>Repository == null) {
+            set<<entityName>>Repository(new <<entityName>>RepositoryHibernate());
+        }
+
+        return <<entityNameLower>>Repository;
+    }
+
+    public void set<<entityName>>Repository(<<entityName>>Repository <<entityNameLower>>Repository) {
+        this.<<entityNameLower>>Repository = <<entityNameLower>>Repository;
+    }
+
+    public Validator get<<entityName>>Validator() {
+        if (<<entityNameLower>>Validator == null) {
+            set<<entityName>>Validator(new Validator<<<entityName>>>());
+        }
+        return <<entityNameLower>>Validator;
+    }
+
+    public void set<<entityName>>Validator(Validator <<entityNameLower>>Validator) {
+        this.<<entityNameLower>>Validator = <<entityNameLower>>Validator;
+    }
+}

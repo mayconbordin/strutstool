@@ -5,14 +5,10 @@ import com.struts.tool.StrutsToolException;
 import com.struts.tool.attributes.Attribute;
 import com.struts.tool.helpers.DirectoryHelper;
 import com.struts.tool.helpers.FileHelper;
-import com.struts.tool.helpers.StringHelper;
 import com.struts.tool.output.MessageOutput;
-import com.struts.tool.types.DataType;
-import com.struts.tool.types.DataTypeCollection;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -62,7 +58,7 @@ public class Controller {
     private void makeStrutsConfig() throws StrutsToolException {
         try {
             String refStrutsConfigPath = DirectoryHelper.getInstallationDirectory()
-                    + "/resources/files/StrutsConfig.txt";
+                    + "/resources/files/StrutsConfig";
             String strutsConfig = FileHelper.toString(refStrutsConfigPath);
 
             // Replace the tags
@@ -83,6 +79,8 @@ public class Controller {
         try {
             String strutsConfig = "src/java/struts.xml";
             String configContent = FileHelper.toString(strutsConfig);
+
+            //Load StrutsConfigInclude
 
             String file = packages + "/controller/" + entityName + "Controller.xml";
             String include = "<!-- generator:includes -->\n"
@@ -134,7 +132,7 @@ public class Controller {
     private void makeValidator() throws StrutsToolException {
         try {
             String refValidatorPath = DirectoryHelper.getInstallationDirectory()
-                    + "/resources/files/StrutsValidator.txt";
+                    + "/resources/files/StrutsValidator";
 
             String validator = FileHelper.toString(refValidatorPath);
 
@@ -158,7 +156,7 @@ public class Controller {
     private void makeModelController() throws StrutsToolException {
         try {
             String refControllerPath = DirectoryHelper.getInstallationDirectory()
-                    + "/resources/files/Controller.txt";
+                    + "/resources/files/Controller";
 
             String controllerClass = FileHelper.toString(refControllerPath);
 

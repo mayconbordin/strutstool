@@ -5,14 +5,10 @@ import com.struts.tool.StrutsToolException;
 import com.struts.tool.attributes.Attribute;
 import com.struts.tool.helpers.DirectoryHelper;
 import com.struts.tool.helpers.FileHelper;
-import com.struts.tool.helpers.StringHelper;
 import com.struts.tool.output.MessageOutput;
-import com.struts.tool.types.DataType;
-import com.struts.tool.types.DataTypeCollection;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -63,7 +59,7 @@ public class Model {
         try {
             // Service Interface
             String refServicePath = DirectoryHelper.getInstallationDirectory()
-                    + "/resources/files/Service.txt";
+                    + "/resources/files/Service";
 
             String serviceContent = FileHelper.toString(refServicePath);
 
@@ -79,7 +75,7 @@ public class Model {
 
             // Service Implementation
             String refServiceImplPath = DirectoryHelper.getInstallationDirectory()
-                    + "/resources/files/ServiceImpl.txt";
+                    + "/resources/files/ServiceImpl";
 
             String serviceImplContent = FileHelper.toString(refServiceImplPath);
 
@@ -109,7 +105,7 @@ public class Model {
         try {
             // Repository Interface
             String refRepositoryPath = DirectoryHelper.getInstallationDirectory()
-                    + "/resources/files/Repository.txt";
+                    + "/resources/files/Repository";
 
             String repositoryContent = FileHelper.toString(refRepositoryPath);
 
@@ -124,7 +120,7 @@ public class Model {
 
             // Hibernate Repository Implementation
             String refRepositoryHibernatePath = DirectoryHelper.getInstallationDirectory()
-                    + "/resources/files/RepositoryHibernate.txt";
+                    + "/resources/files/RepositoryHibernate";
 
             String repositoryHibernateContent = FileHelper.toString(refRepositoryHibernatePath);
 
@@ -152,15 +148,14 @@ public class Model {
 
         try {
             String refMappingPath = DirectoryHelper.getInstallationDirectory()
-                    + "/resources/files/HibernateMapping.txt";
+                    + "/resources/files/HibernateMapping";
 
             String mappingContent = FileHelper.toString(refMappingPath);
 
+            //Load HibernateMappingProperty
+
             String properties = "";
             for (Attribute attr : attributes) {
-                //String attr = entry.getKey();
-                //String type = entry.getValue();
-                
                 if (!attr.getName().equals("id")) {
                     properties += "        <property name=\""+attr+"\" column=\""
                                 + ""+attr+"\" ";
@@ -200,6 +195,8 @@ public class Model {
 
             String configContent = FileHelper.toString(hibernateConfig);
 
+            //Load HibernateMappingResource
+
             String resource = packages + "/model/mapping/" + entityName + ".hbm.xml";
             String mapping = "<!-- generator:mappings -->\n"
                            + "    <mapping resource=\""+resource+"\" />\n";
@@ -224,7 +221,7 @@ public class Model {
 
         try {
             String refEntityPath = DirectoryHelper.getInstallationDirectory()
-                    + "/resources/files/Entity.txt";
+                    + "/resources/files/Entity";
 
             String entityContent = FileHelper.toString(refEntityPath);
 
