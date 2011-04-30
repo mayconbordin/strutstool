@@ -3,17 +3,13 @@
 
 <s:actionerror />
 
-<s:if test="usuario != null">
-	<s:push value="<<namespace>>">
-		<s:hidden name="id" />
-		
+
+<s:push value="<<namespace>>">
+	<s:hidden name="id" />
+	
 <<inputs>>
-		<p>
-		    <s:hidden name="save" value="true" />
-		    <s:submit key="label.save" name="" />
-		</p>
-	</s:push>
-</s:if>
-<s:else>
-    <s:text name="error.notFound" />
-</s:else>
+	<p>
+	    <s:hidden name="save" value="true" />
+	    <s:submit key="label.save" name="" />
+	</p>
+</s:push>
