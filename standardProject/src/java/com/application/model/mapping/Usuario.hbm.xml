@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+  <class name="com.application.model.entity.Usuario" table="usuario">
+    <id column="id" name="id">
+      <!-- Auto generated values may change from database to database -->
+      <!-- This works for PostgreSQL and Oracle -->
+      <generator class="sequence">
+        <param name="sequence">usuario_id_seq</param>
+      </generator>
+    </id>
+    <property column="nome" length="100" name="nome" not-null="true" type="string"/>
+    <property column="endereco" length="100" name="endereco" not-null="true" type="string"/>
+    <property column="idade" name="idade" not-null="true" type="integer"/>
+    <property column="nascimento" name="nascimento" not-null="true" type="date"/>
+  </class>
+</hibernate-mapping>

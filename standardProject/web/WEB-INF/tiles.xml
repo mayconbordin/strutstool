@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+
+<tiles-definitions>
+    <!-- Layouts -->
+    <definition name="baseLayout" template="/WEB-INF/layouts/baseLayout.jsp">
+        <put-attribute name="mainTitle" value="Web Application"/>
+        <put-attribute name="title" value="Template"/>
+    </definition>
+
+    <!-- Here you include the tiles pages -->
+    <!-- PLEASE DO NOT REMOVE THE COMMENT BELOW -->
+    <!-- generator:pages -->
+    <definition name="usuarioIndex" extends="baseLayout">
+        <put-attribute name="title" value="Index of Usuario"/>
+        <put-attribute name="body"  value="/WEB-INF/usuario/index.jsp"/>
+    </definition>
+    <definition name="usuarioAdd" extends="baseLayout">
+        <put-attribute name="title" value="Add of Usuario"/>
+        <put-attribute name="body"  value="/WEB-INF/usuario/add.jsp"/>
+    </definition>
+    <definition name="usuarioEdit" extends="baseLayout">
+        <put-attribute name="title" value="Edit of Usuario"/>
+        <put-attribute name="body"  value="/WEB-INF/usuario/edit.jsp"/>
+    </definition>
+
+</tiles-definitions>
