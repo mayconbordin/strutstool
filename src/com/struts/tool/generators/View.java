@@ -131,7 +131,7 @@ public class View {
                     inputs += "    <p>\n"
                             + "        <s:label key=\"label."+attr+"\" />\n";
 
-                    if (attr.getType().getRawType().equals("date")) {
+                    if (attr.getType().getRaw().equals("date")) {
                         inputs += "        <sj:datepicker name=\""+attr+"\" "
                                 + "displayFormat=\"dd/mm/yy\" />\n";
                     } else {

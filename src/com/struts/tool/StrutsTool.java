@@ -135,7 +135,7 @@ public class StrutsTool {
                         .replace("{attr}", temp[0]));
             }
 
-            if (temp.length == 2) {
+            if (temp.length > 1) {
                 attr.setName(temp[0]);
 
                 DataType dt = DataTypeCollection.get(temp[1]);
@@ -146,7 +146,7 @@ public class StrutsTool {
                 attr.setType(dt);
             }
                 
-            if (temp.length == 3) {
+            if (temp.length > 2) {
                 if (IntegerHelper.isInteger(temp[2])) {
                     attr.setSize(Integer.parseInt(temp[2]));
                 } else {
@@ -154,7 +154,7 @@ public class StrutsTool {
                 }
             }
 
-            if (temp.length == 4) {
+            if (temp.length > 3) {
                 attr.setRelatedWith(temp[2]);
                 attr.setSize(Integer.parseInt(temp[3]));
             }

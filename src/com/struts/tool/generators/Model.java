@@ -160,14 +160,12 @@ public class Model {
                     properties += "        <property name=\""+attr+"\" column=\""
                                 + ""+attr+"\" ";
 
-                    if (attr.getType().getRawType().equals("char") 
-                            || attr.getType().getRawType().equals("string")
-                            || attr.getType().getRawType().equals("character")) {
-                        properties += "length=\"\" ";
+                    if (attr.getType().getClassification().equals("character")) {
+                        properties += "length=\""+attr.getSize()+"\" ";
                     }
 
                     properties += "not-null=\"true\" type=\""
-                                + attr.getType().getHibernateType()+"\"/>\n";
+                                + attr.getType().getHibernate()+"\"/>\n";
                 }
             }
 
@@ -230,8 +228,8 @@ public class Model {
             String accessors = "";
             String imports = "";
             for (Attribute attr : attributes) {
-                if (attr.getType().getJavaTypeImport() != null) {
-                    imports += "import " + attr.getType().getJavaTypeImport() + ";\n";
+                if (attr.getType().getJavaImport() != null) {
+                    imports += "import " + attr.getType().getJavaImport() + ";\n";
                 }
 
                 attribs += "    private "+attr.getType()+" "+attr+";\n";

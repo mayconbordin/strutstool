@@ -6,76 +6,86 @@ package com.struts.tool.types;
  * @version 0.1
  */
 public class DataType {
-    private String rawType;
-    private String javaType;
-    private String javaTypeImport;
-    private String hibernateType;
+    private String raw;
+    private String java;
+    private String hibernate;
+    private String javaImport;
+    private String classification;
 
-    public DataType(String rawType, String javaType, String javaTypeImport, String hbType) {
-        this.rawType = rawType;
-        this.javaType = javaType;
-        this.javaTypeImport = javaTypeImport;
-        this.hibernateType = hbType;
+    public DataType(String raw, String java, String javaImport, String hibernate, String classification) {
+        this.raw = raw;
+        this.java = java;
+        this.javaImport = javaImport;
+        this.hibernate = hibernate;
+        this.classification = classification;
     }
 
     /**
      * @return the rawType
      */
-    public String getRawType() {
-        return rawType;
+    public String getRaw() {
+        return raw;
     }
 
     /**
-     * @param rawType the rawType to set
+     * @param raw the rawType to set
      */
-    public void setRawType(String rawType) {
-        this.rawType = rawType;
+    public void setRaw(String raw) {
+        this.raw = raw;
     }
 
     /**
      * @return the javaType
      */
-    public String getJavaType() {
-        return javaType;
+    public String getJava() {
+        return java;
     }
 
     /**
-     * @param javaType the javaType to set
+     * @param java the javaType to set
      */
-    public void setJavaType(String javaType) {
-        this.javaType = javaType;
+    public void setJava(String java) {
+        this.java = java;
     }
 
     /**
      * @return the javaTypeImport
      */
-    public String getJavaTypeImport() {
-        return javaTypeImport;
+    public String getJavaImport() {
+        return javaImport;
     }
 
     /**
-     * @param javaTypeImport the javaTypeImport to set
+     * @param javaImport the javaTypeImport to set
      */
-    public void setJavaTypeImport(String javaTypeImport) {
-        this.javaTypeImport = javaTypeImport;
+    public void setJavaImport(String javaImport) {
+        this.javaImport = javaImport;
     }
 
     /**
      * @return the hbType
      */
-    public String getHibernateType() {
-        return hibernateType;
+    public String getHibernate() {
+        return hibernate;
     }
 
     /**
-     * @param hbType the hbType to set
+     * @param hibernate the hbType to set
      */
-    public void setHibernateType(String hbType) {
-        this.hibernateType = hbType;
+    public void setHibernate(String hibernate) {
+        this.hibernate = hibernate;
     }
 
     @Override
     public String toString() {
-        return javaType;
+        return java;
+    }
+
+    public String getClassification() {
+        return classification;
+    }
+
+    public void setClassification(String classification) {
+        this.classification = classification;
     }
 }
