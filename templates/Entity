@@ -1,0 +1,11 @@
+package <<packages>>.model.entity;
+
+import com.framework.util.validator.constraints.NotNull;
+import com.framework.util.validator.constraints.XSSFilter;
+import java.io.Serializable;
+<<imports>>
+
+public class <<entityName>> implements Serializable {
+<<attributes>>
+<<accessors>>
+}
