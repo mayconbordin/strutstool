@@ -1,9 +1,0 @@
-<%@taglib uri="/struts-tags" prefix="s"%>
-
-<h1>Add <<entityName>></h1>
-
-<div>
-    <s:form action="add" namespace="/<<namespace>>">
-        <s:include value="form.jsp" />
-    </s:form>
-</div>

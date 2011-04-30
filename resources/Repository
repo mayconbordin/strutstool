@@ -1,8 +1,0 @@
-package <<packages>>.model.repository;
-
-import <<packages>>.model.entity.<<entityName>>;
-import com.framework.util.repository.GenericRepository;
-
-public interface <<entityName>>Repository extends GenericRepository<<<entityName>>, Integer>  {
-    
-}
