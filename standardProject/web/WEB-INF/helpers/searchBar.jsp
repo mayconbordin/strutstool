@@ -7,7 +7,7 @@
     <s:text name="search.for" />
     <s:textfield name="searchParams.value" />
     <s:hidden name="search" value="true" />
-    <s:submit key="search.submit" />
+    <s:submit key="search.submit" name="" />
     <s:submit key="search.reset" onclick="window.location.href = './index.action';return false;" />
 </s:form>
 </div>

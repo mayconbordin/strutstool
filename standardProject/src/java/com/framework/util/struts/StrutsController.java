@@ -4,8 +4,6 @@ import com.framework.util.pagination.ExtendedPaginatedList;
 import com.framework.util.pagination.factory.PaginateListFactory;
 import com.framework.util.pagination.manager.PagingLookupManager;
 import com.framework.util.search.EntityField;
-import com.framework.util.search.Operator;
-import com.framework.util.search.OperatorCollection;
 import com.framework.util.search.SearchAware;
 import com.framework.util.search.SearchParams;
 import com.framework.util.validator.ValidatorException;
