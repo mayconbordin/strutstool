@@ -9,11 +9,12 @@ public class Messages {
     public static String usage = "Usage:\n"
             + "\n"
             + "Project:\n"
-            + "  strutstool new project [project name]\n"
+            + "  strutstool new project [project name] [optional: package path]\n"
+            + "  Ex.: strutstool new project blog com.web.blog\n"
             + "\n"
             + "Scaffolding:\n"
-            + "  strutstool scaffold [fullClassName] [parameter:dataType ...]\n"
-            + "  Ex.: strutstool scaffold com.application.User name:String passw:String\n"
+            + "  strutstool scaffold [class name] [[parameter:dataType [...]]\n"
+            + "  Ex.: strutstool scaffold User name:string passw:string\n"
             + "\n";
 
     // MESSAGES
@@ -50,6 +51,7 @@ public class Messages {
     public static String removeProjectError = "Unable to remove project, remove manually.";
 
     public static String createControllerFolderError = "Unable to create the controller folders.";
+    public static String createControllerConfigFolderError = "Unable to create the controller configuration folder.";
     public static String createStrutsConfigError = "Unable to create struts config file for controller.";
     public static String addingStrutsConfError = "Unable to add controller configuration to struts.xml.";
     public static String createControllerPropError = "Unable to create the controller properties file.";

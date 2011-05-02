@@ -5,5 +5,5 @@
     <bean id="paginateListFactory" class="com.framework.util.pagination.factory.PaginateListFactory" />
     
     <!-- generator:imports -->
-    <import resource="classpath:/com/application/controller/config/UsuarioBeanFactory.xml"/>
+
 </beans>

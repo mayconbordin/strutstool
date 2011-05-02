@@ -7,6 +7,7 @@ import com.struts.tool.helpers.DirectoryHelper;
 import com.struts.tool.helpers.FileHelper;
 import com.struts.tool.helpers.StringHelper;
 import com.struts.tool.output.MessageOutput;
+import com.struts.tool.output.MessageOutputFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -18,30 +19,59 @@ import java.util.List;
  */
 public class View {
     private String entityName;
-    private String packages;
-    private String path;
+    private Project project;
     private List<Attribute> attributes;
+
+    private String viewRootPath;
+    private String templatePath;
 
     private MessageOutput out;
 
-    public View(String entityName, String packages, List<Attribute> attributes, MessageOutput out) {
+    public View(String entityName, Project project, List<Attribute> attributes) {
         this.entityName = entityName;
-        this.packages = packages;
-        this.path = "web/WEB-INF/" + entityName.toLowerCase();
+        this.project = project;
         this.attributes = attributes;
+        this.out = MessageOutputFactory.getTerminalInstance();
     }
 
-    public void makeView() throws StrutsToolException {
+    public View(String entityName, Project project) {
+        this.entityName = entityName;
+        this.project = project;
+        this.out = MessageOutputFactory.getTerminalInstance();
+    }
+
+    private void loadPaths() {
+        viewRootPath = Project.WEB_PATH
+                     + StringHelper.firstToLowerCase(entityName);
+
+        templatePath = DirectoryHelper.getInstallationDirectory()
+                     + Project.TEMPLATES_PATH
+                     + Project.VIEW_FOLDER;
+    }
+
+    public void createFromModel() throws StrutsToolException {
+        loadPaths();
         makeFolder();
         makeIndexPage();
         makeAddPage();
         makeEditPage();
         makeFormPage();
-        addPagesToTilesConfig();
+
+        String[] actions = {"index", "add", "edit"};
+        addPagesToTilesConfig(actions);
+    }
+
+    public void create(List<String> actions) throws StrutsToolException {
+        loadPaths();
+        makeFolder();
+
+        String[] actionsArr = (String[]) actions.toArray();
+        makePages(actionsArr);
+        addPagesToTilesConfig(actionsArr);
     }
 
     private void makeFolder() throws StrutsToolException {
-        File folder = new File(path);
+        File folder = new File(viewRootPath);
         if (!folder.exists()) {
             if (!folder.mkdirs()) {
                 throw new StrutsToolException(Messages.createViewFolderError);
@@ -49,27 +79,49 @@ public class View {
         }
     }
 
-    private void makeIndexPage() throws StrutsToolException {
+    private void makePages(String[] actions) throws StrutsToolException {
         try {
-            String refPagePath = DirectoryHelper.getInstallationDirectory()
-                    + "/resources/files/IndexView";
+            String refPagePath = templatePath + "/GenericView";
 
             String pageContent = FileHelper.toString(refPagePath);
 
-            String tableHeader = "";
+            for (String action : actions) {
+                // Replace the tags
+                pageContent = pageContent.replace("<<action>>",
+                        StringHelper.firstToUpperCase(action));
+                pageContent = pageContent.replace("<<entityName>>", entityName);
+
+                String pagePath = viewRootPath + "/" 
+                                + StringHelper.firstToLowerCase(action)
+                                + ".jsp";
+
+                FileHelper.toFile(pagePath, pageContent);
+            }
+        } catch (IOException ex) {
+            throw new StrutsToolException(Messages.createViewAddPageError, ex);
+        }
+    }
+
+    private void makeIndexPage() throws StrutsToolException {
+        try {
+            String refPagePath = templatePath + "/IndexView";
+
+            String pageContent = FileHelper.toString(refPagePath);
+
             String tableContents = "";
             for (Attribute attr : attributes) {
-                tableHeader += "            <th><s:text name=\"label."+attr+"\" /></th>\n";
-                tableContents += "            <td><s:property value=\""+attr+"\" /></td>\n";
+                if (!attr.getName().equals("id")) {
+                    tableContents += "\t<display:column property=\""+attr+"\" "
+                                   + "value=\"label."+attr+"\" sortable=\"true\" />\n";
+                }
             }
 
             // Replace the tags
-            pageContent = pageContent.replaceAll("<<namespace>>", entityName.toLowerCase());
-            pageContent = pageContent.replaceAll("<<entityName>>", entityName);
-            pageContent = pageContent.replaceAll("<<tableHeader>>", tableHeader);
-            pageContent = pageContent.replaceAll("<<tableContents>>", tableContents);
+            pageContent = pageContent.replace("<<namespace>>", entityName.toLowerCase());
+            pageContent = pageContent.replace("<<entityName>>", entityName);
+            pageContent = pageContent.replace("<<tableContents>>", tableContents);
 
-            String pagePath = path + "/index.jsp";
+            String pagePath = viewRootPath + "/index.jsp";
 
             FileHelper.toFile(pagePath, pageContent);
         } catch (IOException ex) {
@@ -79,16 +131,15 @@ public class View {
 
     private void makeAddPage() throws StrutsToolException {
         try {
-            String refPagePath = DirectoryHelper.getInstallationDirectory()
-                    + "/resources/files/AddView";
+            String refPagePath = templatePath + "/AddView";
 
             String pageContent = FileHelper.toString(refPagePath);
 
             // Replace the tags
-            pageContent = pageContent.replaceAll("<<namespace>>", entityName.toLowerCase());
-            pageContent = pageContent.replaceAll("<<entityName>>", entityName);
+            pageContent = pageContent.replace("<<namespace>>", entityName.toLowerCase());
+            pageContent = pageContent.replace("<<entityName>>", entityName);
 
-            String pagePath = path + "/add.jsp";
+            String pagePath = viewRootPath + "/add.jsp";
 
             FileHelper.toFile(pagePath, pageContent);
         } catch (IOException ex) {
@@ -98,16 +149,15 @@ public class View {
 
     private void makeEditPage() throws StrutsToolException {
         try {
-            String refPagePath = DirectoryHelper.getInstallationDirectory()
-                    + "/resources/files/EditView";
+            String refPagePath = templatePath + "/EditView";
 
             String pageContent = FileHelper.toString(refPagePath);
 
             // Replace the tags
-            pageContent = pageContent.replaceAll("<<namespace>>", entityName.toLowerCase());
-            pageContent = pageContent.replaceAll("<<entityName>>", entityName);
+            pageContent = pageContent.replace("<<namespace>>", entityName.toLowerCase());
+            pageContent = pageContent.replace("<<entityName>>", entityName);
 
-            String pagePath = path + "/edit.jsp";
+            String pagePath = viewRootPath + "/edit.jsp";
 
             FileHelper.toFile(pagePath, pageContent);
         } catch (IOException ex) {
@@ -117,8 +167,7 @@ public class View {
 
     private void makeFormPage() throws StrutsToolException {
         try {
-            String refPagePath = DirectoryHelper.getInstallationDirectory()
-                    + "/resources/files/FormView";
+            String refPagePath = templatePath + "/FormView";
 
             String pageContent = FileHelper.toString(refPagePath);
 
@@ -128,26 +177,26 @@ public class View {
                 //DataType type = DataTypeCollection.types.get(entry.getValue().toLowerCase());
 
                 if (!attr.getName().equals("id")) {
-                    inputs += "    <p>\n"
-                            + "        <s:label key=\"label."+attr+"\" />\n";
+                    inputs += "\t<p>\n"
+                            + "\t\t<s:label key=\"label."+attr+"\" />\n";
 
                     if (attr.getType().getRaw().equals("date")) {
-                        inputs += "        <sj:datepicker name=\""+attr+"\" "
+                        inputs += "\t\t<sj:datepicker name=\""+attr+"\" "
                                 + "displayFormat=\"dd/mm/yy\" />\n";
                     } else {
-                        inputs += "        <s:textfield name=\""+attr+"\" />\n";
+                        inputs += "\t\t<s:textfield name=\""+attr+"\" />\n";
                     }
 
-                    inputs += "        <s:fielderror fieldName=\""+attr+"\" />\n"
-                            + "    </p>\n";
+                    inputs += "\t\t<s:fielderror fieldName=\""+attr+"\" />\n"
+                            + "\t</p>\n";
                 }
             }
 
             // Replace the tags
-            pageContent = pageContent.replaceAll("<<namespace>>", entityName.toLowerCase());
-            pageContent = pageContent.replaceAll("<<inputs>>", inputs);
+            pageContent = pageContent.replace("<<namespace>>", entityName.toLowerCase());
+            pageContent = pageContent.replace("<<inputs>>", inputs);
 
-            String pagePath = path + "/form.jsp";
+            String pagePath = viewRootPath + "/form.jsp";
 
             FileHelper.toFile(pagePath, pageContent);
         } catch (IOException ex) {
@@ -155,27 +204,25 @@ public class View {
         }
     }
 
-    private void addPagesToTilesConfig() throws StrutsToolException {
+    private void addPagesToTilesConfig(String[] actions) throws StrutsToolException {
         try {
-            String[] actions = {"index", "add", "edit"};
-
             String tilesConfig = "web/WEB-INF/tiles.xml";
 
             String configContent = FileHelper.toString(tilesConfig);
 
             String pages = "<!-- generator:pages -->\n";
             for (String action : actions) {
-                pages += "    <definition name=\""+entityName.toLowerCase()
+                pages += "\t<definition name=\""+entityName.toLowerCase()
                       + StringHelper.firstToUpperCase(action)+"\" extends=\"baseLayout\">\n"
-                      + "        <put-attribute name=\"title\" value=\""
+                      + "\t\t<put-attribute name=\"title\" value=\""
                       + StringHelper.firstToUpperCase(action)+" of "+entityName+"\"/>\n"
-                      + "        <put-attribute name=\"body\"  value=\"/WEB-INF/"
+                      + "\t\t<put-attribute name=\"body\"  value=\"/WEB-INF/"
                       + ""+entityName.toLowerCase()+"/"+action+".jsp\"/>\n"
-                      + "    </definition>\n";
+                      + "\t</definition>\n";
             }
 
             // Replace the tags
-            configContent = configContent.replaceAll("<!-- generator:pages -->", pages);
+            configContent = configContent.replace("<!-- generator:pages -->", pages);
 
             FileHelper.toFile(tilesConfig, configContent);
         } catch (IOException ex) {

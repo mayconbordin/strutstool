@@ -3,19 +3,20 @@ package com.struts.tool;
 import com.struts.tool.attributes.Attribute;
 import com.struts.tool.generators.Controller;
 import com.struts.tool.generators.Model;
+import com.struts.tool.generators.Project;
 import com.struts.tool.generators.View;
 import com.struts.tool.helpers.FileHelper;
 import com.struts.tool.helpers.IntegerHelper;
 import com.struts.tool.helpers.StringHelper;
 import com.struts.tool.helpers.ZipHelper;
 import com.struts.tool.output.MessageOutput;
+import com.struts.tool.output.MessageOutputFactory;
 import com.struts.tool.types.DataType;
 import com.struts.tool.types.DataTypeCollection;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -23,102 +24,55 @@ import java.util.Map;
  * @version 0.1
  */
 public class StrutsTool {
-    private List<Attribute> attributes;
+    private Project project;
     private MessageOutput out;
 
-    public StrutsTool(MessageOutput out) { this.out= out; }
+    public StrutsTool() {
+        this.out = MessageOutputFactory.getTerminalInstance();
+    }
     
-    public void newProject(String name) throws StrutsToolException {
-        out.put(Messages.buildingProject);
-        out.put(Messages.creatingProjectFolder);
-        File projectDir = new File(name);
-        if (!projectDir.mkdir()) {
-            throw new StrutsToolException(Messages.newProjectDirError);
-        }
-
-        ZipHelper zip = new ZipHelper();
-
-        out.put(Messages.unzipProjectFiles);
-        File projectFiles = new File("resources/project.zip");
-        try {
-            zip.unzip(projectFiles, projectDir);
-        } catch (IOException ex) {
-            throw new StrutsToolException(Messages.unzipProjectError, ex);
-        }
-
-        out.put(Messages.unzipLibFiles);
-        File libFiles = new File("resources/lib.zip");
-        try {
-            zip.unzip(libFiles, projectDir);
-        } catch (IOException ex) {
-            throw new StrutsToolException(Messages.unzipLibError, ex);
-        }
-
-        out.put(Messages.configuringNetBeans);
-        changeNetbeansProjectName(name);
-
-        out.put(Messages.projectCreated.replace("{name}", name));
+    public void newProject(String name, String packages) throws StrutsToolException {
+        project = new Project(name, packages);
+        project.create();
     }
 
     public void removeProject(String name) throws StrutsToolException {
-        out.put(Messages.removingProject);
-        File projectDir = new File(name);
-        if (projectDir.exists()) {
-            if (!FileHelper.deleteDir(projectDir)) {
-                throw new StrutsToolException(Messages.removeProjectError);
-            }
-        }
-        out.put(Messages.projectRemoved);
-    }
-
-    public boolean buildXmlExists() {
-        File buildXml = new File("build.xml");
-
-        if (buildXml.exists()) {
-            return true;
-        } else {
-            return false;
-        }
+        project = new Project(name);
+        project.destroy();
     }
 
     public void scaffold(String[] args) throws StrutsToolException {
-        out.put(Messages.scaffoldingInProgress.replace("{entity}", args[1]));
-        out.put(Messages.extractingParams);
-        extractParams(args, true);
+        project = Project.getInstance();
 
-        out.put(Messages.configPackAndEntityNames);
-        String packages = "";
-        String entityName = "";
-        if (args.length > 1) {
-            //Get the package name
-            int lastDot = args[1].lastIndexOf(".");
-            packages = args[1].substring(0, lastDot).replace(".", "/");
+        if (project != null) {
+            out.put(Messages.scaffoldingInProgress.replace("{entity}", args[1]));
+            List<Attribute> attributes = extractParams(args, true);
 
-            //Get the entity name
-            String[] temp = args[1].split("\\.");
-            entityName = StringHelper.firstToUpperCase(temp[temp.length - 1]);
+            String entityName = "";
+            if (args.length > 1) {
+                entityName = args[1];
+            }
+
+            // Create the controllers
+            Controller controller = new Controller(entityName, project, attributes);
+            controller.createModelController();
+
+            // Create the model
+            Model model = new Model(entityName, project, attributes);
+            model.createModel(true, true, true);
+
+            // Create the view
+            View view = new View(entityName, project, attributes);
+            view.createFromModel();
+
+            out.put(Messages.scaffoldingDone.replace("{entity}", args[1]));
+        } else {
+            throw new StrutsToolException(Messages.goToRootOfApp);
         }
-
-        // Create the controllers
-        out.put(Messages.creatingControllerFiles);
-        Controller controller = new Controller(entityName, packages, attributes, out);
-        controller.createModelController();
-
-        // Create the model
-        out.put(Messages.creatingModelFiles);
-        Model model = new Model(entityName, packages, attributes, out);
-        model.createModel();
-
-        // Create the view
-        out.put(Messages.creatingViewFiles);
-        View view = new View(entityName, packages, attributes, out);
-        view.makeView();
-
-        out.put(Messages.scaffoldingDone.replace("{entity}", args[1]));
     }
 
-    private void extractParams(String[] args, boolean addId) throws StrutsToolException {
-        attributes = new ArrayList();
+    private List<Attribute> extractParams(String[] args, boolean addId) throws StrutsToolException {
+        List<Attribute> attributes = new ArrayList();
         if (addId) {
             attributes.add(new Attribute("id", DataTypeCollection.get("int")));
         }
@@ -161,28 +115,7 @@ public class StrutsTool {
 
             attributes.add(attr);
         }
-    }
 
-    private void changeNetbeansProjectName(String name) throws StrutsToolException {
-        try {
-            String buildXml = name + "/build.xml";
-            String projectXml = name + "/nbproject/project.xml";
-            String contextXml = name + "/web/META-INF/context.xml";
-
-            String buildContent = FileHelper.toString(buildXml);
-            String projectContent = FileHelper.toString(projectXml);
-            String contextContent = FileHelper.toString(contextXml);
-
-            // Replace the tags
-            buildContent = buildContent.replaceAll("<<StandardApplication>>", name);
-            projectContent = projectContent.replaceAll("<<StandardApplication>>", name);
-            contextContent = contextContent.replaceAll("<<StandardApplication>>", name);
-            
-            FileHelper.toFile(buildXml, buildContent);
-            FileHelper.toFile(projectXml, projectContent);
-            FileHelper.toFile(contextXml, contextContent);
-        } catch (IOException ex) {
-            throw new StrutsToolException(Messages.renameNetbeansProjectError, ex);
-        }
+        return attributes;
     }
 }

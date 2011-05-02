@@ -16,6 +16,6 @@
     <!-- Here you include the hibernate mappings -->
     <!-- PLEASE DO NOT REMOVE THE COMMENT BELOW -->
     <!-- generator:mappings -->
-    <mapping resource="com/application/model/mapping/Usuario.hbm.xml"/>
+
   </session-factory>
 </hibernate-configuration>

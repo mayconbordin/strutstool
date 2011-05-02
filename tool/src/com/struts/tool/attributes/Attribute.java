@@ -30,7 +30,7 @@ public class Attribute {
     }
 
     public String getNameLower() {
-        return name.toLowerCase();
+        return StringHelper.firstToLowerCase(name);
     }
 
     public void setName(String name) {

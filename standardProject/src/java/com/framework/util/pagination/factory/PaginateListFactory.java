@@ -8,20 +8,22 @@ import org.displaytag.properties.SortOrderEnum;
 
 public class PaginateListFactory {
 
-    public ExtendedPaginatedList getPaginatedListFromRequest(
-            HttpServletRequest request) {
-
+    public ExtendedPaginatedList getPaginatedListFromRequest(HttpServletRequest request) {
         ExtendedPaginatedList paginatedList = new PaginatedListImpl();
         String sortCriterion = null;
         String thePage = null;
+        
         if (request != null) {
             sortCriterion = request
                     .getParameter(ExtendedPaginatedList.IRequestParameters.SORT);
+
             paginatedList
                     .setSortDirection(ExtendedPaginatedList.IRequestParameters.DESC
                             .equals(request
-                                    .getParameter(ExtendedPaginatedList.IRequestParameters.DIRECTION)) ? SortOrderEnum.DESCENDING
+                                    .getParameter(ExtendedPaginatedList
+                                    .IRequestParameters.DIRECTION)) ? SortOrderEnum.DESCENDING
                             : SortOrderEnum.ASCENDING);
+            
             thePage = request
                     .getParameter(ExtendedPaginatedList.IRequestParameters.PAGE);
         }

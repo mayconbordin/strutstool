@@ -13,17 +13,5 @@
     <!-- Here you include the tiles pages -->
     <!-- PLEASE DO NOT REMOVE THE COMMENT BELOW -->
     <!-- generator:pages -->
-    <definition name="usuarioIndex" extends="baseLayout">
-        <put-attribute name="title" value="Index of Usuario"/>
-        <put-attribute name="body"  value="/WEB-INF/usuario/index.jsp"/>
-    </definition>
-    <definition name="usuarioAdd" extends="baseLayout">
-        <put-attribute name="title" value="Add of Usuario"/>
-        <put-attribute name="body"  value="/WEB-INF/usuario/add.jsp"/>
-    </definition>
-    <definition name="usuarioEdit" extends="baseLayout">
-        <put-attribute name="title" value="Edit of Usuario"/>
-        <put-attribute name="body"  value="/WEB-INF/usuario/edit.jsp"/>
-    </definition>
 
 </tiles-definitions>

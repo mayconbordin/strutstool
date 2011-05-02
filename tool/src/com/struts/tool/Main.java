@@ -1,7 +1,7 @@
 package com.struts.tool;
 
 import com.struts.tool.output.MessageOutput;
-import com.struts.tool.output.TerminalOutput;
+import com.struts.tool.output.MessageOutputTerminal;
 
 /**
  *
@@ -9,10 +9,10 @@ import com.struts.tool.output.TerminalOutput;
  * @version 0.1
  */
 public class Main {
-    private static MessageOutput out = new TerminalOutput();
+    private static MessageOutput out = new MessageOutputTerminal();
    
     public static void main(String[] args) {
-        StrutsTool tool = new StrutsTool(out);
+        StrutsTool tool = new StrutsTool();
 
         if (args.length == 0) {
             out.put(Messages.usage);
@@ -23,16 +23,16 @@ public class Main {
             return;
         }
 
-        if (args.length == 3 && args[0].equals("new")) {
+        if (args.length == 4 && args[0].equals("new")) {
             if (args[1].equals("project")) {
                 try {
-                    tool.newProject(args[2]);
+                    tool.newProject(args[2], args[3]);
                 } catch (StrutsToolException ex) {
-                    out.put("Error: " + ex.getMessage());
+                    out.put("ERROR " + ex.getMessage());
                     try {
                         tool.removeProject(args[2]);
                     } catch (StrutsToolException ex1) {
-                        out.put("Error: " + ex1.getMessage());
+                        out.put("ERROR " + ex1.getMessage());
                     }
                 }
             }
@@ -40,13 +40,9 @@ public class Main {
 
         if (args.length > 2 && args[0].equals("scaffold")) {
             try {
-                if (tool.buildXmlExists()) {
-                    tool.scaffold(args);
-                } else {
-                    out.put(Messages.goToRootOfApp);
-                }
+                tool.scaffold(args);
             } catch (StrutsToolException ex) {
-                out.put("Error: " + ex.getMessage());
+                out.put("ERROR " + ex.getMessage());
             }
         }
     }

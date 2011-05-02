@@ -1,6 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE struts PUBLIC
-"-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
-"http://struts.apache.org/dtds/struts-2.0.dtd">
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "/WEB-INF/classes/struts-2.1.7.dtd">
 
 <struts>
     <!-- Struts theme -->
@@ -69,6 +70,5 @@
     <!-- Here you include other struts configuration files -->
     <!-- PLEASE DO NOT REMOVE THE COMMENT BELOW -->
     <!-- generator:includes -->
-    <include file="com/application/controller/config/UsuarioController.xml"/>
 
 </struts>

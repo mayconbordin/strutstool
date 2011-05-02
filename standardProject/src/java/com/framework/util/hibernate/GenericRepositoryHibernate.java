@@ -46,6 +46,7 @@ public class GenericRepositoryHibernate<T, ID extends Serializable> implements G
         Transaction t = null;
         try {
             t = getSession().beginTransaction();
+            clear();
             getSession().saveOrUpdate(object);
             t.commit();
         } catch (HibernateException e) {
