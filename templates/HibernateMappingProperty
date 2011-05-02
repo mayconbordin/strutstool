@@ -1,1 +1,0 @@
-        <property name="<<attribute>>" column="<<column>>"<<lenght>> not-null="true" type="<<type>>" />
