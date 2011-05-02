@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+    <!-- generator:beans -->
+    <bean id="<<entityNameLower>>RepositoryHibernate" class="<<packages>>.model.repository.<<entityName>>RepositoryHibernate" />
+    <bean id="<<entityNameLower>>ServiceImpl" class="<<packages>>.model.service.<<entityName>>ServiceImpl" />
+
+    <bean id="pagingLookupManagerImpl" class="com.framework.util.pagination.manager.PagingLookupManagerImpl">
+        <property name="repository" ref="<<entityNameLower>>RepositoryHibernate" />
+    </bean>
+    
+    <bean id="<<entityNameLower>>Controller" class="<<packages>>.controller.<<entityName>>Controller" singleton="false">
+        <property name="paginateListFactory" ref="paginateListFactory" />
+        <property name="pagingManager" ref="pagingLookupManagerImpl" />
+        <property name="<<entityNameLower>>Service" ref="<<entityNameLower>>ServiceImpl" />
+    </bean>
+</beans>

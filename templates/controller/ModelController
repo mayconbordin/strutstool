@@ -1,0 +1,124 @@
+package <<packages>>.controller;
+
+// generator:imports
+import <<packages>>.model.entity.<<entityName>>;
+import <<packages>>.model.search.<<entityName>>SearchMap;
+import <<packages>>.model.service.<<entityName>>Service;
+import <<packages>>.model.service.<<entityName>>ServiceImpl;
+import com.framework.util.pagination.manager.PagingLookupManagerException;
+import com.framework.util.search.EntitySearchMap;
+import com.framework.util.struts.StrutsController;
+import com.framework.util.repository.RepositoryException;
+import com.framework.util.search.SearchAware;
+import com.framework.util.validator.ValidatorException;
+import com.opensymphony.xwork2.ModelDriven;
+
+public class <<entityName>>Controller extends StrutsController 
+        implements ModelDriven<<<entityName>>>, SearchAware {
+    
+    // generator:attributes
+    private <<entityName>>Service <<entityNameLower>>Service;
+    private <<entityName>> <<entityNameLower>> = new <<entityName>>();
+    private Integer <<entityNameLower>>Id;
+
+    // Actions =================================================================
+    // generator:actions
+    
+    public String index() {
+        try {
+            paginatedList = paginateListFactory.getPaginatedListFromRequest(request);
+            paginatedList.setPageSize(Integer.parseInt(getText("table.pagesize")));
+
+            if (isSearch()) {
+                paginatedList = pagingManager.getSearchRecordsPage(searchParams, paginatedList);
+            } else {
+                paginatedList = pagingManager.getAllRecordsPage(paginatedList);
+            }
+        } catch (PagingLookupManagerException ex) {
+            errorHandler(ex);
+        }
+        
+        statusHandler();
+        return SUCCESS;
+    }
+
+    public String edit() {
+        try {
+            if (isSave()) {
+                get<<entityName>>Service().save(<<entityNameLower>>);
+                return SUCCESS_SAVE;
+            } else {
+                <<entityNameLower>> = get<<entityName>>Service().findById(<<entityNameLower>>Id);
+                if (<<entityNameLower>> == null) {
+                    return NOT_FOUND;
+                }
+            }
+        } catch (RepositoryException ex) {
+            errorHandler(ex);
+        } catch (ValidatorException ex) {
+            errorHandler(ex);
+        }
+
+        return SUCCESS;
+    }
+
+    public String add() {
+        try {
+            if (isSave()) {
+                get<<entityName>>Service().save(<<entityNameLower>>);
+                return SUCCESS_SAVE;
+            }
+        } catch (RepositoryException ex) {
+            errorHandler(ex);
+        } catch (ValidatorException ex) {
+            errorHandler(ex);
+        }
+
+        return SUCCESS;
+    }
+
+    public void delete() {
+        try {
+            get<<entityName>>Service().delete(<<entityNameLower>>Id);
+        } catch (RepositoryException ex) {
+            errorHandler(ex);
+        }
+    }
+
+    // Implemented interface methods ===========================================
+
+    public <<entityName>> getModel() {
+        return <<entityNameLower>>;
+    }
+
+    public EntitySearchMap getEntitySearchMap() {
+        return new <<entityName>>SearchMap();
+    }
+
+    // Getters and Setters =====================================================
+    // generator:accessors
+    
+    public <<entityName>>Service get<<entityName>>Service() {
+        return <<entityNameLower>>Service;
+    }
+
+    public void set<<entityName>>Service(<<entityName>>Service <<entityNameLower>>Service) {
+        this.<<entityNameLower>>Service = <<entityNameLower>>Service;
+    }
+
+    public <<entityName>> get<<entityName>>() {
+        return <<entityNameLower>>;
+    }
+
+    public void set<<entityName>>(<<entityName>> <<entityNameLower>>) {
+        this.<<entityNameLower>> = <<entityNameLower>>;
+    }
+
+    public Integer get<<entityName>>Id() {
+        return <<entityNameLower>>Id;
+    }
+
+    public void set<<entityName>>Id(Integer <<entityNameLower>>Id) {
+        this.<<entityNameLower>>Id = <<entityNameLower>>Id;
+    }
+}

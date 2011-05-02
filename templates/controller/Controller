@@ -1,0 +1,15 @@
+package <<packages>>.controller;
+
+// generator:imports
+import com.framework.util.struts.StrutsController;
+
+public class <<entityName>>Controller extends StrutsController {
+	// generator:attributes
+	
+    // Actions =================================================================
+    // generator:actions
+    
+    // Getters and Setters =====================================================
+    // generator:accessors
+    
+}

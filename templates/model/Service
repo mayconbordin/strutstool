@@ -1,0 +1,19 @@
+package <<packages>>.model.service;
+
+import <<packages>>.model.entity.<<entityName>>;
+import com.framework.util.repository.RepositoryException;
+import com.framework.util.validator.ValidatorException;
+import java.util.List;
+
+public interface <<entityName>>Service {
+    public void save(<<entityName>> <<entityNameLower>>) throws RepositoryException, ValidatorException;
+    public void delete(Integer id) throws RepositoryException;
+    public List<<<entityName>>> findAll() throws RepositoryException;
+    public List<<<entityName>>> findAll(String orderBy, String orderType) throws RepositoryException;
+    public <<entityName>> findById(Integer id) throws RepositoryException;
+
+    public List<<<entityName>>> findAllByExample(<<entityName>> <<entityNameLower>>) throws RepositoryException;
+    public List<<<entityName>>> findAllWithPagination(int min, int max, String orderBy, String orderType) throws RepositoryException;
+
+    public Integer count() throws RepositoryException;
+}

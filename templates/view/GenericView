@@ -1,0 +1,4 @@
+<%@taglib uri="/struts-tags" prefix="s"%>
+<%@taglib uri="/struts-jquery-tags" prefix="sj" %>
+
+<h1>Action <<action>> of <<entityName>></h1>

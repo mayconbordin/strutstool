@@ -1,0 +1,10 @@
+package <<packages>>.model.entity;
+
+// generator:imports
+import java.io.Serializable;
+
+public class <<entityName>> implements Serializable {
+	// generator:attributes
+
+	// generator:accessors
+}
