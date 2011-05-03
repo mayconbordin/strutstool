@@ -26,11 +26,11 @@ public class Attribute {
     }
 
     public String getNameFirstUpper() {
-        return StringHelper.firstToUpperCase(name);
+        return StringHelper.ucfirst(name);
     }
 
     public String getNameLower() {
-        return StringHelper.firstToLowerCase(name);
+        return StringHelper.lcfirst(name);
     }
 
     public void setName(String name) {

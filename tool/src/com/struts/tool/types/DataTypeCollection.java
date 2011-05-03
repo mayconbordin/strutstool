@@ -46,7 +46,6 @@ public class DataTypeCollection {
         //Collection
         types.put("list", new DataType("list", "List", "java.util.List", null, "collection"));
         types.put("set", new DataType("set", "Set", "java.util.Set", null, "collection"));
-        types.put("map", new DataType("map", "Map", "java.util.Map", null, "collection"));
     }
 
     public static DataType get(String key) {

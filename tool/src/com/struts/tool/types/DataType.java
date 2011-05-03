@@ -12,6 +12,11 @@ public class DataType {
     private String javaImport;
     private String classification;
 
+    public DataType(String java, String javaImport) {
+        this.java = java;
+        this.javaImport = javaImport;
+    }
+
     public DataType(String raw, String java, String javaImport, String hibernate, String classification) {
         this.raw = raw;
         this.java = java;

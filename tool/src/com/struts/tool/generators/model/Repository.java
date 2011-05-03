@@ -6,6 +6,8 @@ import com.struts.tool.generators.Model;
 import com.struts.tool.generators.Project;
 import com.struts.tool.helpers.DirectoryHelper;
 import com.struts.tool.helpers.FileHelper;
+import com.struts.tool.output.MessageOutput;
+import com.struts.tool.output.MessageOutputFactory;
 import java.io.File;
 import java.io.IOException;
 
@@ -19,8 +21,11 @@ public class Repository {
     private String repositoryRootPath;
     private String templatePath;
 
+    private MessageOutput out;
+
     public Repository(Model model) {
         this.model = model;
+        this.out = MessageOutputFactory.getTerminalInstance();
     }
 
     public void create() throws StrutsToolException {
@@ -44,9 +49,12 @@ public class Repository {
         File repository = new File(repositoryRootPath);
         
         if (!repository.exists()) {
+            out.put("create  " + repositoryRootPath);
             if (!repository.mkdirs()) {
                 throw new StrutsToolException(Messages.createModelRepositoryFolderError);
             }
+        } else {
+            out.put("exists  " + repositoryRootPath);
         }
     }
 
@@ -66,6 +74,8 @@ public class Repository {
             String repositoryPath = repositoryRootPath + "/"
                     + model.getEntityName() + "Repository.java";
 
+            out.put("create  " + repositoryPath);
+
             FileHelper.toFile(repositoryPath, repositoryContent);
 
             // Hibernate Repository Implementation
@@ -81,6 +91,8 @@ public class Repository {
 
             String repositoryHibernatePath = repositoryRootPath + "/"
                     + model.getEntityName() + "RepositoryHibernate.java";
+
+            out.put("create  " + repositoryHibernatePath);
 
             FileHelper.toFile(repositoryHibernatePath, repositoryHibernateContent);
         } catch(IOException ex) {

@@ -2,7 +2,7 @@ package com.struts.tool.generators;
 
 import com.struts.tool.Messages;
 import com.struts.tool.StrutsToolException;
-import com.struts.tool.attributes.Attribute;
+import com.struts.tool.builder.components.Attribute;
 import com.struts.tool.generators.controller.BeanFactory;
 import com.struts.tool.generators.controller.Properties;
 import com.struts.tool.generators.controller.StrutsConfig;
@@ -25,6 +25,9 @@ public class Controller {
     private Project project;
     private List<Attribute> attributes;
 
+    private String controllerRootPath;
+    private String templatePath;
+
     private MessageOutput out;
 
     public Controller(String entityName, Project project, List<Attribute> attributes) {
@@ -34,7 +37,14 @@ public class Controller {
         this.out = MessageOutputFactory.getTerminalInstance();
     }
 
+    public Controller(String entityName, Project project) {
+        this.entityName = entityName;
+        this.project = project;
+        this.out = MessageOutputFactory.getTerminalInstance();
+    }
+
     public void createModelController() throws StrutsToolException {
+        loadPaths();
         makeFolder();
         makeModelController();
 
@@ -49,6 +59,7 @@ public class Controller {
     }
 
     public void createController(List<String> actions, boolean includeView) throws StrutsToolException {
+        loadPaths();
         makeFolder();
         makeController(actions);
 
@@ -68,23 +79,31 @@ public class Controller {
         }
     }
 
+    private void loadPaths() {
+        controllerRootPath = Project.SRC_PATH + project.getPackages()
+                           + "/" + Project.CONTROLLER_FOLDER;
+
+        templatePath = DirectoryHelper.getInstallationDirectory()
+                     + Project.TEMPLATES_PATH
+                     + Project.CONTROLLER_FOLDER;
+    }
+
     private void makeFolder() throws StrutsToolException {
-        File controller = new File(Project.SRC_PATH + project.getPackages() 
-                + "/" + Project.CONTROLLER_FOLDER);
+        File controller = new File(controllerRootPath);
         
         if (!controller.exists()) {
+            out.put("create  " + controllerRootPath);
             if (!controller.mkdirs()) {
                 throw new StrutsToolException(Messages.createControllerFolderError);
             }
+        } else {
+            out.put("exists  " + controllerRootPath);
         }
     }
 
     private void makeModelController() throws StrutsToolException {
         try {
-            String refControllerPath = DirectoryHelper.getInstallationDirectory()
-                    + Project.TEMPLATES_PATH
-                    + Project.CONTROLLER_FOLDER
-                    + "/ModelController";
+            String refControllerPath = templatePath + "/ModelController";
 
             String controllerClass = FileHelper.toString(refControllerPath);
 
@@ -93,11 +112,12 @@ public class Controller {
                     project.getPackages().replace("/", "."));
             controllerClass = controllerClass.replace("<<entityName>>", entityName);
             controllerClass = controllerClass.replace("<<entityNameLower>>",
-                    StringHelper.firstToLowerCase(entityName));
+                    StringHelper.lcfirst(entityName));
 
-            String newControllerPath = Project.SRC_PATH + project.getPackages() 
-                    + "/" + Project.CONTROLLER_FOLDER
-                    + "/" + entityName + "Controller.java";
+            String newControllerPath = controllerRootPath + "/"
+                                     + entityName + "Controller.java";
+
+            out.put("create  " + newControllerPath);
 
             FileHelper.toFile(newControllerPath, controllerClass);
         } catch (IOException ex) {
@@ -107,17 +127,14 @@ public class Controller {
 
     private void makeController(List<String> actions) throws StrutsToolException {
         try {
-            String refControllerPath = DirectoryHelper.getInstallationDirectory()
-                    + Project.TEMPLATES_PATH
-                    + Project.CONTROLLER_FOLDER
-                    + "/Controller";
+            String refControllerPath = templatePath + "/Controller";
 
             String controllerClass = FileHelper.toString(refControllerPath);
 
             String actionsStr = "\t// generator:actions\n\n";
             for (String action : actions) {
                 actionsStr += "\tpublic String "
-                            + StringHelper.firstToUpperCase(action) +"() {\n"
+                            + StringHelper.lcfirst(action) +"() {\n"
                             + "\t\treturn SUCCESS;\n"
                             + "\t}\n\n";
             }
@@ -128,9 +145,10 @@ public class Controller {
             controllerClass = controllerClass.replace("<<entityName>>", entityName);
             controllerClass = controllerClass.replace("// generator:actions", actionsStr);
 
-            String newControllerPath = Project.SRC_PATH + project.getPackages()
-                    + "/" + Project.CONTROLLER_FOLDER
-                    + "/" + entityName + "Controller.java";
+            String newControllerPath = controllerRootPath + "/"
+                                     + entityName + "Controller.java";
+
+            out.put("create  " + newControllerPath);
 
             FileHelper.toFile(newControllerPath, controllerClass);
         } catch (IOException ex) {

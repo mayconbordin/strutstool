@@ -7,6 +7,8 @@ import com.struts.tool.generators.Project;
 import com.struts.tool.helpers.DirectoryHelper;
 import com.struts.tool.helpers.FileHelper;
 import com.struts.tool.helpers.StringHelper;
+import com.struts.tool.output.MessageOutput;
+import com.struts.tool.output.MessageOutputFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -21,8 +23,11 @@ public class StrutsConfig {
     private String strutsConfRootPath;
     private String templatePath;
 
+    private MessageOutput out;
+
     public StrutsConfig(Controller controller) {
         this.controller = controller;
+        this.out = MessageOutputFactory.getTerminalInstance();
     }
 
     public void createModelConfig() throws StrutsToolException {
@@ -52,9 +57,12 @@ public class StrutsConfig {
         File controllerConfig = new File(strutsConfRootPath);
         
         if (!controllerConfig.exists()) {
+            out.put("create  " + strutsConfRootPath);
             if (!controllerConfig.mkdirs()) {
                 throw new StrutsToolException(Messages.createControllerConfigFolderError);
             }
+        } else {
+            out.put("exists  " + strutsConfRootPath);
         }
     }
 
@@ -67,7 +75,7 @@ public class StrutsConfig {
             // Create the controller reference
             String controllerStr = "";
             if (fromBeanFactory) {
-                controllerStr = StringHelper.firstToLowerCase(controller.getEntityName())
+                controllerStr = StringHelper.lcfirst(controller.getEntityName())
                               + "Controller";
             } else {
                 controllerStr = controller.getProject().getPackages().replace("/", ".") + "."
@@ -77,12 +85,14 @@ public class StrutsConfig {
 
             // Replace the tags
             strutsConfig = strutsConfig.replace("<<namespace>>",
-                    StringHelper.firstToLowerCase(controller.getEntityName()));
+                    StringHelper.lcfirst(controller.getEntityName()));
             strutsConfig = strutsConfig.replace("<<controller>>", controllerStr);
 
             String strutsConfigPath = strutsConfRootPath + "/"
                                     + controller.getEntityName()
                                     + "Controller.xml";
+
+            out.put("create  " + strutsConfigPath);
 
             FileHelper.toFile(strutsConfigPath, strutsConfig);
             
@@ -102,7 +112,7 @@ public class StrutsConfig {
             // Create the controller reference
             String controllerStr = "";
             if (fromBeanFactory) {
-                controllerStr = StringHelper.firstToLowerCase(controller.getEntityName())
+                controllerStr = StringHelper.lcfirst(controller.getEntityName())
                               + "Controller";
             } else {
                 controllerStr = controller.getProject().getPackages().replace("/", ".") + "."
@@ -119,16 +129,16 @@ public class StrutsConfig {
             String actionsStr = "";
             for (String action : actions) {
                 String resultPage = "/WEB-INF/"
-                        + StringHelper.firstToLowerCase(controller.getEntityName());
+                        + StringHelper.lcfirst(controller.getEntityName());
                 if (tilesTemplate) {
                     resultPage = controller.getEntityName()
-                            + StringHelper.firstToUpperCase(action);
+                            + StringHelper.lcfirst(action);
                 }
                 
-                actionsStr += "\t\t<!-- " + StringHelper.firstToUpperCase(action) + " -->\n"
+                actionsStr += "\t\t<!-- " + StringHelper.ucfirst(action) + " -->\n"
                             + "\t\t<action name=\""
-                            + StringHelper.firstToLowerCase(action)+"\" method=\""
-                            + StringHelper.firstToLowerCase(action)+"\" "
+                            + StringHelper.lcfirst(action)+"\" method=\""
+                            + StringHelper.lcfirst(action)+"\" "
                             + "class=\""+controllerStr+"\">\n"
                             + "\t\t\t<result name=\"success\""+tileAttr+">\n"
                             + resultPage + "</result>\n"
@@ -141,13 +151,15 @@ public class StrutsConfig {
 
             // Replace the tags
             strutsConfig = strutsConfig.replace("<<namespace>>",
-                    StringHelper.firstToLowerCase(controller.getEntityName()));
+                    StringHelper.lcfirst(controller.getEntityName()));
             strutsConfig = strutsConfig.replace("<!-- generator:actions -->",
                     actionsStr);
 
             String strutsConfigPath = strutsConfRootPath + "/"
                                     + controller.getEntityName()
                                     + "Controller.xml";
+
+            out.put("create  " + strutsConfigPath);
 
             FileHelper.toFile(strutsConfigPath, strutsConfig);
 
@@ -159,6 +171,7 @@ public class StrutsConfig {
 
     private void addToApplication() throws StrutsToolException {
         try {
+            out.put("modify  " + Project.STRUTS_CONFIG_XML);
             String configContent = FileHelper.toString(Project.STRUTS_CONFIG_XML);
 
             String file = controller.getProject().getPackages() + "/"

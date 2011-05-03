@@ -2,12 +2,14 @@ package com.struts.tool.generators.model;
 
 import com.struts.tool.Messages;
 import com.struts.tool.StrutsToolException;
-import com.struts.tool.attributes.Attribute;
+import com.struts.tool.builder.components.Attribute;
 import com.struts.tool.generators.Model;
 import com.struts.tool.generators.Project;
 import com.struts.tool.helpers.DirectoryHelper;
 import com.struts.tool.helpers.FileHelper;
 import com.struts.tool.helpers.StringHelper;
+import com.struts.tool.output.MessageOutput;
+import com.struts.tool.output.MessageOutputFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,8 +29,11 @@ public class SearchMap {
 
     private List<String> fieldTypes;
 
+    private MessageOutput out;
+
     public SearchMap(Model model) {
         this.model = model;
+        this.out = MessageOutputFactory.getTerminalInstance();
     }
 
     public void create() throws StrutsToolException {
@@ -66,9 +71,12 @@ public class SearchMap {
         File repository = new File(searchRootPath);
 
         if (!repository.exists()) {
+            out.put("create  " + searchRootPath);
             if (!repository.mkdirs()) {
                 throw new StrutsToolException(Messages.createModelRepositoryFolderError);
             }
+        } else {
+            out.put("exists  " + searchRootPath);
         }
     }
 
@@ -81,11 +89,11 @@ public class SearchMap {
             String fields = "// generator:fields\n";
             
             for (Attribute attr : model.getAttributes()) {
-                if (fieldTypes.contains(attr.getType().getRaw())) {
+                if (fieldTypes.contains(attr.getType().getName())) {
                     fields += "\t\tfields.put(\""+attr+"\", new EntityField(\""
-                            + attr.getNameFirstUpper()+"\", \""+attr+"\","
+                            + StringHelper.ucfirst(attr.getName())+"\", \""+attr+"\","
                             + " EntityFieldType."
-                            + attr.getType().getRaw().toUpperCase()+"));\n";
+                            + attr.getType().getName().toUpperCase()+"));\n";
                 }
             }
 
@@ -97,6 +105,8 @@ public class SearchMap {
 
             String searchMapPath = searchRootPath + "/"
                               + model.getEntityName() + "SearchMap.java";
+
+            out.put("create  " + searchMapPath);
 
             FileHelper.toFile(searchMapPath, searchMapContent);
         } catch (IOException ex) {

@@ -7,14 +7,16 @@ package com.struts.tool;
  */
 public class Messages {    
     public static String usage = "Usage:\n"
+            + "  strutstool action-name provider-name [provider parameters ...]\n"
             + "\n"
-            + "Project:\n"
-            + "  strutstool new project [project name] [optional: package path]\n"
-            + "  Ex.: strutstool new project blog com.web.blog\n"
+            + "Providers and their actions:\n"
+            + "  Project\n"
+            + "    strutstool new project [project name] [package path]\n"
+            + "    Ex.: strutstool new project blog com.web.blog\n"
             + "\n"
-            + "Scaffolding:\n"
-            + "  strutstool scaffold [class name] [[parameter:dataType [...]]\n"
-            + "  Ex.: strutstool scaffold User name:string passw:string\n"
+            + "  Scaffold\n"
+            + "    strutstool scaffold [class name] [<parameter:dataType> ...]\n"
+            + "    Ex.: strutstool scaffold User name:string passw:string\n"
             + "\n";
 
     // MESSAGES

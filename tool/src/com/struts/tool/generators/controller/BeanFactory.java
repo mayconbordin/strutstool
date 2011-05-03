@@ -7,6 +7,8 @@ import com.struts.tool.generators.Project;
 import com.struts.tool.helpers.DirectoryHelper;
 import com.struts.tool.helpers.FileHelper;
 import com.struts.tool.helpers.StringHelper;
+import com.struts.tool.output.MessageOutput;
+import com.struts.tool.output.MessageOutputFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -17,30 +19,48 @@ import java.util.List;
  */
 public class BeanFactory {
     private Controller controller;
+    private MessageOutput out;
+
+    private String beanFactoryRootPath;
+    private String templatePath;
 
     public BeanFactory(Controller controller) {
         this.controller = controller;
+        this.out = MessageOutputFactory.getTerminalInstance();
     }
 
     public void createModelBean() throws StrutsToolException {
+        loadPaths();
         makeFolder();
         makeBean(true);
     }
 
     public void createBean() throws StrutsToolException {
+        loadPaths();
         makeFolder();
         makeBean(false);
     }
 
+    private void loadPaths() {
+        beanFactoryRootPath = Project.SRC_PATH
+                            + controller.getProject().getPackages() + "/"
+                            + Project.CONTROLLER_CONFIG_FOLDER;
+
+        templatePath = DirectoryHelper.getInstallationDirectory()
+                     + Project.TEMPLATES_PATH
+                     + Project.CONTROLLER_FOLDER;
+    }
+
     private void makeFolder() throws StrutsToolException {
-        File controllerConfig = new File(Project.SRC_PATH
-                + controller.getProject().getPackages() + "/"
-                + Project.CONTROLLER_CONFIG_FOLDER);
+        File controllerConfig = new File(beanFactoryRootPath);
 
         if (!controllerConfig.exists()) {
+            out.put("create  " + beanFactoryRootPath);
             if (!controllerConfig.mkdirs()) {
                 throw new StrutsToolException(Messages.createControllerConfigFolderError);
             }
+        } else {
+            out.put("exists  " + beanFactoryRootPath);
         }
     }
 
@@ -51,25 +71,21 @@ public class BeanFactory {
                 beanTemplate = "ModelBeanFactory";
             }
             
-            String refBeanFactoryPath = DirectoryHelper.getInstallationDirectory()
-                    + Project.TEMPLATES_PATH
-                    + Project.CONTROLLER_FOLDER
-                    + "/" + beanTemplate;
+            String refBeanFactoryPath = templatePath + "/" + beanTemplate;
 
             String beanFactory = FileHelper.toString(refBeanFactoryPath);
 
             // Replace the tags
             beanFactory = beanFactory.replace("<<entityName>>", controller.getEntityName());
             beanFactory = beanFactory.replace("<<entityNameLower>>",
-                    StringHelper.firstToLowerCase(controller.getEntityName()));
+                    StringHelper.lcfirst(controller.getEntityName()));
             beanFactory = beanFactory.replace("<<packages>>", 
                     controller.getProject().getPackages().replace("/", "."));
 
-            String beanFactoryPath = Project.SRC_PATH
-                    + controller.getProject().getPackages() + "/"
-                    + Project.CONTROLLER_FOLDER
-                    + "/config/"
-                    + controller.getEntityName() + "BeanFactory.xml";
+            String beanFactoryPath = beanFactoryRootPath + "/"
+                                   + controller.getEntityName() + "BeanFactory.xml";
+
+            out.put("create  " + beanFactoryPath);
 
             FileHelper.toFile(beanFactoryPath, beanFactory);
 
@@ -83,6 +99,8 @@ public class BeanFactory {
         try {
             String applicationContext = Project.WEB_PATH + "applicationContext.xml";
             String appContextContent = FileHelper.toString(applicationContext);
+
+            out.put("modify  " + applicationContext);
 
             String file = controller.getProject().getPackages() + "/"
                     + Project.CONTROLLER_FOLDER

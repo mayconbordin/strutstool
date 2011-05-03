@@ -2,7 +2,7 @@ package com.struts.tool.generators;
 
 import com.struts.tool.Messages;
 import com.struts.tool.StrutsToolException;
-import com.struts.tool.attributes.Attribute;
+import com.struts.tool.builder.components.Attribute;
 import com.struts.tool.generators.model.Entity;
 import com.struts.tool.generators.model.Mapping;
 import com.struts.tool.generators.model.Repository;
@@ -24,6 +24,8 @@ public class Model {
     private Project project;
     private List<Attribute> attributes;
 
+    private String modelRootPath;
+
     private MessageOutput out;
 
     public Model(String entityName, Project project, List<Attribute> attributes) {
@@ -39,15 +41,22 @@ public class Model {
         this.out = MessageOutputFactory.getTerminalInstance();
     }
 
+    private void loadPaths() {
+        modelRootPath = Project.SRC_PATH
+                        + project.getPackages()
+                        + "/" + Project.MODEL_FOLDER;
+    }
+
     public void createModel(boolean enableHibernate, boolean enableValidator,
             boolean enableLuceneSearch) throws StrutsToolException {
+        loadPaths();
         makeFolder();
 
         // Hibernate Search (Lucene) needs hibernate repository to work
         enableLuceneSearch = (enableHibernate) ? enableLuceneSearch : false;
 
         Entity entity = new Entity(this);
-        entity.create(enableValidator, enableLuceneSearch);
+        entity.create(enableValidator, enableLuceneSearch, enableHibernate);
 
         if (enableHibernate) {
             Mapping mapping = new Mapping(this);
@@ -71,14 +80,15 @@ public class Model {
 
     private void makeFolder() throws StrutsToolException {
         // Create the folder
-        File model = new File(Project.SRC_PATH
-                        + project.getPackages()
-                        + "/" + Project.MODEL_FOLDER);
+        File model = new File(modelRootPath);
 
         if (!model.exists()) {
+            out.put("create  " + modelRootPath);
             if (!model.mkdirs()) {
                 throw new StrutsToolException(Messages.createModelRepositoryFolderError);
             }
+        } else {
+            out.put("exists  " + modelRootPath);
         }
     }
 

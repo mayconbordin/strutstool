@@ -7,6 +7,8 @@ import com.struts.tool.generators.Project;
 import com.struts.tool.helpers.DirectoryHelper;
 import com.struts.tool.helpers.FileHelper;
 import com.struts.tool.helpers.StringHelper;
+import com.struts.tool.output.MessageOutput;
+import com.struts.tool.output.MessageOutputFactory;
 import java.io.File;
 import java.io.IOException;
 
@@ -20,8 +22,11 @@ public class Service {
     private String serviceRootPath;
     private String templatePath;
 
+    private MessageOutput out;
+
     public Service(Model model) {
         this.model = model;
+        this.out = MessageOutputFactory.getTerminalInstance();
     }
 
     public void create() throws StrutsToolException {
@@ -45,9 +50,12 @@ public class Service {
         File service = new File(serviceRootPath);
         
         if (!service.exists()) {
+            out.put("create  " + serviceRootPath);
             if (!service.mkdirs()) {
                 throw new StrutsToolException(Messages.createModelServiceFolderError);
             }
+        } else {
+            out.put("exists  " + serviceRootPath);
         }
     }
 
@@ -61,11 +69,13 @@ public class Service {
             // Replace the tags
             serviceContent = serviceContent.replace("<<packages>>", model.getProject().getPackages().replace("/", "."));
             serviceContent = serviceContent.replace("<<entityName>>", model.getEntityName());
-            serviceContent = serviceContent.replace("<<entityNameLower>>", StringHelper.firstToLowerCase(model.getEntityName()));
+            serviceContent = serviceContent.replace("<<entityNameLower>>", StringHelper.lcfirst(model.getEntityName()));
 
             String servicePath = serviceRootPath 
                     + "/" + model.getEntityName()
                     + "Service.java";
+
+            out.put("create  " + servicePath);
 
             FileHelper.toFile(servicePath, serviceContent);
 
@@ -77,11 +87,13 @@ public class Service {
             // Replace the tags
             serviceImplContent = serviceImplContent.replace("<<packages>>", model.getProject().getPackages().replace("/", "."));
             serviceImplContent = serviceImplContent.replace("<<entityName>>", model.getEntityName());
-            serviceImplContent = serviceImplContent.replace("<<entityNameLower>>", StringHelper.firstToLowerCase(model.getEntityName()));
+            serviceImplContent = serviceImplContent.replace("<<entityNameLower>>", StringHelper.lcfirst(model.getEntityName()));
 
             String serviceImplPath = serviceRootPath
                     + "/" + model.getEntityName()
                     + "ServiceImpl.java";
+
+            out.put("create  " + serviceImplPath);
 
             FileHelper.toFile(serviceImplPath, serviceImplContent);
         } catch(IOException ex) {

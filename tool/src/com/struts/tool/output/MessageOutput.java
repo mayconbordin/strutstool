@@ -7,4 +7,5 @@ package com.struts.tool.output;
  */
 public interface MessageOutput {
     public void put(String message);
+    public void put(String message, String tab);
 }

@@ -8,6 +8,10 @@ package com.struts.tool.output;
 public class MessageOutputTerminal implements MessageOutput {
 
     public void put(String message) {
-        System.out.println("\t" + message);
+        System.out.println("    " + message);
+    }
+
+    public void put(String message, String tab) {
+        System.out.println(tab + message);
     }
 }

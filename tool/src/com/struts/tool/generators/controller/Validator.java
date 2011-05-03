@@ -2,7 +2,7 @@ package com.struts.tool.generators.controller;
 
 import com.struts.tool.Messages;
 import com.struts.tool.StrutsToolException;
-import com.struts.tool.attributes.Attribute;
+import com.struts.tool.builder.components.Attribute;
 import com.struts.tool.generators.Controller;
 import com.struts.tool.generators.Project;
 import com.struts.tool.helpers.DirectoryHelper;

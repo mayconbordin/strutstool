@@ -2,9 +2,10 @@ package com.struts.tool.generators;
 
 import com.struts.tool.Messages;
 import com.struts.tool.StrutsToolException;
-import com.struts.tool.attributes.Attribute;
+import com.struts.tool.builder.components.Attribute;
 import com.struts.tool.helpers.DirectoryHelper;
 import com.struts.tool.helpers.FileHelper;
+import com.struts.tool.helpers.ListHelper;
 import com.struts.tool.helpers.StringHelper;
 import com.struts.tool.output.MessageOutput;
 import com.struts.tool.output.MessageOutputFactory;
@@ -42,7 +43,7 @@ public class View {
 
     private void loadPaths() {
         viewRootPath = Project.WEB_PATH
-                     + StringHelper.firstToLowerCase(entityName);
+                     + StringHelper.lcfirst(entityName);
 
         templatePath = DirectoryHelper.getInstallationDirectory()
                      + Project.TEMPLATES_PATH
@@ -65,7 +66,7 @@ public class View {
         loadPaths();
         makeFolder();
 
-        String[] actionsArr = (String[]) actions.toArray();
+        String[] actionsArr = ListHelper.toStringArray(actions);
         makePages(actionsArr);
         addPagesToTilesConfig(actionsArr);
     }
@@ -73,9 +74,12 @@ public class View {
     private void makeFolder() throws StrutsToolException {
         File folder = new File(viewRootPath);
         if (!folder.exists()) {
+            out.put("create  " + viewRootPath);
             if (!folder.mkdirs()) {
                 throw new StrutsToolException(Messages.createViewFolderError);
             }
+        } else {
+            out.put("exists  " + viewRootPath);
         }
     }
 
@@ -88,12 +92,14 @@ public class View {
             for (String action : actions) {
                 // Replace the tags
                 pageContent = pageContent.replace("<<action>>",
-                        StringHelper.firstToUpperCase(action));
+                        StringHelper.ucfirst(action));
                 pageContent = pageContent.replace("<<entityName>>", entityName);
 
                 String pagePath = viewRootPath + "/" 
-                                + StringHelper.firstToLowerCase(action)
+                                + StringHelper.lcfirst(action)
                                 + ".jsp";
+
+                out.put("create  " + pagePath);
 
                 FileHelper.toFile(pagePath, pageContent);
             }
@@ -123,6 +129,8 @@ public class View {
 
             String pagePath = viewRootPath + "/index.jsp";
 
+            out.put("create  " + pagePath);
+
             FileHelper.toFile(pagePath, pageContent);
         } catch (IOException ex) {
             throw new StrutsToolException(Messages.createViewIndexPageError, ex);
@@ -141,6 +149,8 @@ public class View {
 
             String pagePath = viewRootPath + "/add.jsp";
 
+            out.put("create  " + pagePath);
+
             FileHelper.toFile(pagePath, pageContent);
         } catch (IOException ex) {
             throw new StrutsToolException(Messages.createViewAddPageError, ex);
@@ -158,6 +168,8 @@ public class View {
             pageContent = pageContent.replace("<<entityName>>", entityName);
 
             String pagePath = viewRootPath + "/edit.jsp";
+
+            out.put("create  " + pagePath);
 
             FileHelper.toFile(pagePath, pageContent);
         } catch (IOException ex) {
@@ -180,7 +192,7 @@ public class View {
                     inputs += "\t<p>\n"
                             + "\t\t<s:label key=\"label."+attr+"\" />\n";
 
-                    if (attr.getType().getRaw().equals("date")) {
+                    if (attr.getType().getName().equals("date")) {
                         inputs += "\t\t<sj:datepicker name=\""+attr+"\" "
                                 + "displayFormat=\"dd/mm/yy\" />\n";
                     } else {
@@ -198,6 +210,8 @@ public class View {
 
             String pagePath = viewRootPath + "/form.jsp";
 
+            out.put("create  " + pagePath);
+
             FileHelper.toFile(pagePath, pageContent);
         } catch (IOException ex) {
             throw new StrutsToolException(Messages.createViewFormPageError, ex);
@@ -207,15 +221,16 @@ public class View {
     private void addPagesToTilesConfig(String[] actions) throws StrutsToolException {
         try {
             String tilesConfig = "web/WEB-INF/tiles.xml";
+            out.put("modify  " + tilesConfig);
 
             String configContent = FileHelper.toString(tilesConfig);
 
             String pages = "<!-- generator:pages -->\n";
             for (String action : actions) {
                 pages += "\t<definition name=\""+entityName.toLowerCase()
-                      + StringHelper.firstToUpperCase(action)+"\" extends=\"baseLayout\">\n"
+                      + StringHelper.ucfirst(action)+"\" extends=\"baseLayout\">\n"
                       + "\t\t<put-attribute name=\"title\" value=\""
-                      + StringHelper.firstToUpperCase(action)+" of "+entityName+"\"/>\n"
+                      + StringHelper.ucfirst(action)+" of "+entityName+"\"/>\n"
                       + "\t\t<put-attribute name=\"body\"  value=\"/WEB-INF/"
                       + ""+entityName.toLowerCase()+"/"+action+".jsp\"/>\n"
                       + "\t</definition>\n";

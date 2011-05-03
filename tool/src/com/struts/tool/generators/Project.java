@@ -57,9 +57,8 @@ public class Project {
     }
 
     public void create() throws StrutsToolException {
-        out.put(Messages.buildingProject);
-        out.put(Messages.creatingProjectFolder);
-
+        out.put("create  blog/");
+        
         File projectDir = new File(name);
         if (!projectDir.mkdir()) {
             throw new StrutsToolException(Messages.newProjectDirError);
@@ -67,7 +66,7 @@ public class Project {
 
         ZipHelper zip = new ZipHelper();
 
-        out.put(Messages.unzipProjectFiles);
+        out.put(" unzip  resources/project.zip");
 
         File projectFiles = new File("resources/project.zip");
         try {
@@ -76,7 +75,7 @@ public class Project {
             throw new StrutsToolException(Messages.unzipProjectError, ex);
         }
 
-        out.put(Messages.unzipLibFiles);
+        out.put(" unzip  resources/lib.zip");
 
         File libFiles = new File("resources/lib.zip");
         try {
@@ -85,38 +84,47 @@ public class Project {
             throw new StrutsToolException(Messages.unzipLibError, ex);
         }
 
-        out.put(Messages.configuringNetBeans);
         configure();
         createPropertiesFile();
         createPackageFolders();
 
-        out.put(Messages.projectCreated.replace("{name}", name));
+        out.put("  done");
     }
 
     public void destroy() throws StrutsToolException {
-        out.put(Messages.removingProject);
+        out.put("remove  " + name + "/");
         File projectDir = new File(name);
         if (projectDir.exists()) {
             if (!FileHelper.deleteDir(projectDir)) {
                 throw new StrutsToolException(Messages.removeProjectError);
             }
         }
-        out.put(Messages.projectRemoved);
+        out.put("  done");
     }
 
     private void createPackageFolders() throws StrutsToolException {
         String path = name + "/" + SRC_PATH + packages.replace(".", "/");
+        
         File packageDirs = new File(path);
         if (!packageDirs.exists()) {
+            out.put("create  " + path);
             if (!packageDirs.mkdirs()) {
                 throw new StrutsToolException(Messages.newProjectDirError);
             }
+        } else {
+            out.put("exists  " + path);
         }
 
     }
 
     private void configure() throws StrutsToolException {
         try {
+            //Message output
+            out.put("modify  " + name + "/build.xml");
+            out.put("modify  " + name + "/nbproject/build-impl.xml");
+            out.put("modify  " + name + "/nbproject/project.xml");
+            out.put("modify  " + name + "/web/META-INF/context.xml");
+
             String buildXml = name + "/build.xml";
             String buildImplXml = name + "/nbproject/build-impl.xml";
             String projectXml = name + "/nbproject/project.xml";
@@ -132,7 +140,7 @@ public class Project {
             buildImplContent = buildImplContent.replace("<<StandardApplication>>", name);
             projectContent = projectContent.replace("<<StandardApplication>>", name);
             contextContent = contextContent.replace("<<StandardApplication>>", name);
-
+            
             FileHelper.toFile(buildXml, buildContent);
             FileHelper.toFile(buildImplXml, buildImplContent);
             FileHelper.toFile(projectXml, projectContent);
@@ -149,9 +157,9 @@ public class Project {
             // Create file if it does not exist
             boolean success = file.createNewFile();
             if (success) {
-                // File did not exist and was created
+                out.put("create  " + name + "/project.properties");
             } else {
-                // File already exists
+                out.put("exists  " + name + "/project.properties");
             }
 
             properties = new Properties();
@@ -193,8 +201,8 @@ public class Project {
         Project project = null;
         if (loaded) {
             project = new Project(
-                    properties.getProperty("project.name"),
-                    properties.getProperty("project.packages"));
+            properties.getProperty("project.name"),
+            properties.getProperty("project.packages"));
         }
 
         return project;
