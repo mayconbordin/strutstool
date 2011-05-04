@@ -44,6 +44,8 @@ public class <<entityName>>Controller extends StrutsController
 
     public String edit() {
         try {
+        	// generator:loaders
+        	
             if (isSave()) {
                 get<<entityName>>Service().save(<<entityNameLower>>);
                 return SUCCESS_SAVE;
@@ -64,6 +66,8 @@ public class <<entityName>>Controller extends StrutsController
 
     public String add() {
         try {
+        	// generator:loaders
+        	
             if (isSave()) {
                 get<<entityName>>Service().save(<<entityNameLower>>);
                 return SUCCESS_SAVE;

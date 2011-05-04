@@ -72,7 +72,6 @@ public class BeanFactory {
             }
             
             String refBeanFactoryPath = templatePath + "/" + beanTemplate;
-
             String beanFactory = FileHelper.toString(refBeanFactoryPath);
 
             // Replace the tags

@@ -2,7 +2,10 @@ package com.struts.tool.generators;
 
 import com.struts.tool.Messages;
 import com.struts.tool.StrutsToolException;
+import com.struts.tool.builder.MarkUpBuilder;
 import com.struts.tool.builder.components.Attribute;
+import com.struts.tool.builder.components.MarkUpTag;
+import com.struts.tool.builder.components.Type;
 import com.struts.tool.helpers.DirectoryHelper;
 import com.struts.tool.helpers.FileHelper;
 import com.struts.tool.helpers.ListHelper;
@@ -115,10 +118,18 @@ public class View {
             String pageContent = FileHelper.toString(refPagePath);
 
             String tableContents = "";
+            MarkUpBuilder builder = new MarkUpBuilder();
+            
             for (Attribute attr : attributes) {
-                if (!attr.getName().equals("id")) {
-                    tableContents += "\t<display:column property=\""+attr+"\" "
-                                   + "value=\"label."+attr+"\" sortable=\"true\" />\n";
+                if (!attr.getName().equals("id")
+                        && !attr.getType().getClassification().equals(Type.COLLECTION)) {
+                    
+                    MarkUpTag display = new MarkUpTag("display:column");
+                    display.addAttribute("property", attr.getName());
+                    display.addAttribute("value", "label." + attr.getName());
+                    display.addAttribute("sortable", "true");
+
+                    tableContents += builder.build(display);
                 }
             }
 
@@ -184,23 +195,49 @@ public class View {
             String pageContent = FileHelper.toString(refPagePath);
 
             String inputs = "";
-            for (Attribute attr : attributes) {
-                //String attr = entry.getKey();
-                //DataType type = DataTypeCollection.types.get(entry.getValue().toLowerCase());
+            MarkUpBuilder builder = new MarkUpBuilder();
 
-                if (!attr.getName().equals("id")) {
-                    inputs += "\t<p>\n"
-                            + "\t\t<s:label key=\"label."+attr+"\" />\n";
+            for (Attribute attr : attributes) {
+
+                if (!attr.getName().equals("id")
+                        && !attr.getType().getClassification().equals(Type.COLLECTION)) {
+                    
+                    MarkUpTag paragraph = new MarkUpTag("p");
+
+                    MarkUpTag label = new MarkUpTag("s:label");
+                    label.addAttribute("key", "label." + attr.getName());
+                    paragraph.addChilren(label);
 
                     if (attr.getType().getName().equals("date")) {
-                        inputs += "\t\t<sj:datepicker name=\""+attr+"\" "
-                                + "displayFormat=\"dd/mm/yy\" />\n";
-                    } else {
-                        inputs += "\t\t<s:textfield name=\""+attr+"\" />\n";
+                        MarkUpTag datepicker = new MarkUpTag("sj:datepicker");
+                        datepicker.addAttribute("name", attr.getName());
+                        datepicker.addAttribute("displayFormat", "dd/mm/yy");
+                        paragraph.addChilren(datepicker);
                     }
 
-                    inputs += "\t\t<s:fielderror fieldName=\""+attr+"\" />\n"
-                            + "\t</p>\n";
+                    else if (attr.getType().getClassification().equals(Type.ENTITY)) {
+                        MarkUpTag autocompleter = new MarkUpTag("sj:autocompleter");
+                        autocompleter.addAttribute("id", attr.getName());
+                        autocompleter.addAttribute("name", attr.getName() + ".id");
+                        autocompleter.addAttribute("list", "%{"
+                                + StringHelper.lcfirst(attr.getName()) + "List}");
+                        autocompleter.addAttribute("listValue", "id");
+                        autocompleter.addAttribute("listKey", "id");
+                        autocompleter.addAttribute("selectBox", "true");
+                        paragraph.addChilren(autocompleter);
+                    }
+
+                    else {
+                        MarkUpTag textfield = new MarkUpTag("s:textfield");
+                        textfield.addAttribute("name", attr.getName());
+                        paragraph.addChilren(textfield);
+                    }
+
+                    MarkUpTag fielderror = new MarkUpTag("s:fielderror");
+                    fielderror.addAttribute("fieldName", attr.getName());
+                    paragraph.addChilren(fielderror);
+
+                    inputs += builder.build(paragraph, "    ");
                 }
             }
 
@@ -226,14 +263,27 @@ public class View {
             String configContent = FileHelper.toString(tilesConfig);
 
             String pages = "<!-- generator:pages -->\n";
+            MarkUpBuilder builder = new MarkUpBuilder();
+
             for (String action : actions) {
-                pages += "\t<definition name=\""+entityName.toLowerCase()
-                      + StringHelper.ucfirst(action)+"\" extends=\"baseLayout\">\n"
-                      + "\t\t<put-attribute name=\"title\" value=\""
-                      + StringHelper.ucfirst(action)+" of "+entityName+"\"/>\n"
-                      + "\t\t<put-attribute name=\"body\"  value=\"/WEB-INF/"
-                      + ""+entityName.toLowerCase()+"/"+action+".jsp\"/>\n"
-                      + "\t</definition>\n";
+                MarkUpTag definition = new MarkUpTag("definition");
+                definition.addAttribute("name", entityName.toLowerCase() 
+                        + StringHelper.ucfirst(action));
+                definition.addAttribute("extends", "baseLayout");
+
+                MarkUpTag title = new MarkUpTag("put-attribute");
+                title.addAttribute("name", "title");
+                title.addAttribute("value", StringHelper.ucfirst(action) 
+                        + " of " + entityName);
+                definition.addChilren(title);
+
+                MarkUpTag body = new MarkUpTag("put-attribute");
+                body.addAttribute("name", "body");
+                body.addAttribute("value", "/WEB-INF/"
+                        + entityName.toLowerCase() + "/" + action + ".jsp");
+                definition.addChilren(body);
+
+                pages += builder.build(definition, "    ");
             }
 
             // Replace the tags

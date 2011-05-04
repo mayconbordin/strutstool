@@ -57,7 +57,7 @@ public class Project {
     }
 
     public void create() throws StrutsToolException {
-        out.put("create  blog/");
+        out.put("create  " + name);
         
         File projectDir = new File(name);
         if (!projectDir.mkdir()) {

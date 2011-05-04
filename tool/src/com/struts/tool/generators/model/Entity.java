@@ -94,7 +94,8 @@ public class Entity {
             }
 
             // All other attribute types, but collections
-            else if (!attr.getType().getClassification().equals(Type.COLLECTION)) {
+            else if (!attr.getType().getClassification().equals(Type.COLLECTION)
+                    && !attr.getType().getClassification().equals(Type.ENTITY)) {
                 attr.getAnnotations().add(getAnnotationFactory().getFieldTokenStore());
             }
         }
@@ -104,8 +105,8 @@ public class Entity {
         for (Method method : entity.getMethods()) {
             // Validation is put on getters, id is not validated, neither is collections
             if (method.getName().startsWith("get")
-                    || !method.getName().endsWith("Id")
-                    || !method.getReturnType().getClassification().equals(Type.COLLECTION)) {
+                    && !method.getName().endsWith("Id")
+                    && !method.getReturnType().getClassification().equals(Type.COLLECTION)) {
 
                 // Add annotations to method
                 method.getAnnotations().addAll(
@@ -151,14 +152,14 @@ public class Entity {
             getter.setName("get" + upperName);
             getter.setReturnType(attr.getType());
             getter.setAccessType(ClassObj.PUBLIC);
-            getter.setContent("return " + lowerName);
+            getter.setContent("return " + lowerName + ";");
             entity.getMethods().add(getter);
 
             Method setter = new Method();
             setter.setName("set" + upperName);
             setter.setReturnType(TypeCollection.get("void"));
             setter.setAccessType(ClassObj.PUBLIC);
-            setter.setContent("this." + lowerName + " = " + lowerName);
+            setter.setContent("this." + lowerName + " = " + lowerName + ";");
             setter.setParameters(new ExtArrayList(new Parameter(attr.getType(), lowerName)));
             entity.getMethods().add(setter);
         }

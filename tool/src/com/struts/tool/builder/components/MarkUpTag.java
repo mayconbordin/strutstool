@@ -6,37 +6,37 @@ import com.struts.tool.util.ExtArrayList;
  *
  * @author maycon
  */
-public class XmlTag {
+public class MarkUpTag {
     private String name;
     private String content;
-    private ExtArrayList<XmlAttribute> attributes = new ExtArrayList();
-    private ExtArrayList<XmlTag> childrens = new ExtArrayList();
-    private XmlTag parent;
+    private ExtArrayList<MarkUpAttribute> attributes = new ExtArrayList();
+    private ExtArrayList<MarkUpTag> childrens = new ExtArrayList();
+    private MarkUpTag parent;
 
-    public XmlTag() {}
+    public MarkUpTag() {}
 
-    public XmlTag(String name) {
+    public MarkUpTag(String name) {
         this.name = name;
     }
 
-    public XmlTag(String name, XmlTag parent) {
+    public MarkUpTag(String name, MarkUpTag parent) {
         this.name = name;
         this.parent = parent;
     }
 
-    public ExtArrayList<XmlAttribute> getAttributes() {
+    public ExtArrayList<MarkUpAttribute> getAttributes() {
         return attributes;
     }
 
-    public void setAttributes(ExtArrayList<XmlAttribute> attributes) {
+    public void setAttributes(ExtArrayList<MarkUpAttribute> attributes) {
         this.attributes = attributes;
     }
 
-    public ExtArrayList<XmlTag> getChildrens() {
+    public ExtArrayList<MarkUpTag> getChildrens() {
         return childrens;
     }
 
-    public void setChildren(ExtArrayList<XmlTag> childrens) {
+    public void setChildren(ExtArrayList<MarkUpTag> childrens) {
         this.childrens = childrens;
     }
 
@@ -56,23 +56,23 @@ public class XmlTag {
         this.name = name;
     }
 
-    public XmlTag getParent() {
+    public MarkUpTag getParent() {
         return parent;
     }
 
-    public void setParent(XmlTag parent) {
+    public void setParent(MarkUpTag parent) {
         this.parent = parent;
     }
 
     public void addAttribute(String name, String value) {
-        attributes.add(new XmlAttribute(name, value));
+        attributes.add(new MarkUpAttribute(name, value));
     }
 
-    public void addChilren(XmlTag children) {
+    public void addChilren(MarkUpTag children) {
         childrens.add(children);
     }
 
-    public void addChilrens(XmlTag... children) {
+    public void addChilrens(MarkUpTag... children) {
         childrens.addAll(children);
     }
 }

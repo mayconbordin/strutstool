@@ -5,13 +5,13 @@
     <bean id="<<entityNameLower>>RepositoryHibernate" class="<<packages>>.model.repository.<<entityName>>RepositoryHibernate" />
     <bean id="<<entityNameLower>>ServiceImpl" class="<<packages>>.model.service.<<entityName>>ServiceImpl" />
 
-    <bean id="pagingLookupManagerImpl" class="com.framework.util.pagination.manager.PagingLookupManagerImpl">
+    <bean id="<<entityNameLower>>PagingLookupManagerImpl" class="com.framework.util.pagination.manager.PagingLookupManagerImpl">
         <property name="repository" ref="<<entityNameLower>>RepositoryHibernate" />
     </bean>
     
     <bean id="<<entityNameLower>>Controller" class="<<packages>>.controller.<<entityName>>Controller" singleton="false">
         <property name="paginateListFactory" ref="paginateListFactory" />
-        <property name="pagingManager" ref="pagingLookupManagerImpl" />
+        <property name="pagingManager" ref="<<entityNameLower>>PagingLookupManagerImpl" />
         <property name="<<entityNameLower>>Service" ref="<<entityNameLower>>ServiceImpl" />
     </bean>
 </beans>

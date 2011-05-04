@@ -7,7 +7,7 @@ package com.struts.tool;
  */
 public class Messages {    
     public static String usage = "Usage:\n"
-            + "  strutstool action-name provider-name [provider parameters ...]\n"
+            + "  strutstool [action-name] [provider-name] [provider parameters ...]\n"
             + "\n"
             + "Providers and their actions:\n"
             + "  Project\n"
@@ -17,6 +17,14 @@ public class Messages {
             + "  Scaffold\n"
             + "    strutstool scaffold [class name] [<parameter:dataType> ...]\n"
             + "    Ex.: strutstool scaffold User name:string passw:string\n"
+            + "\n"
+            + "  Controller\n"
+            + "    strutstool new controller [controller name] [<action name> ...]\n"
+            + "    Ex.: strutstool new controller User index add edit delete\n"
+            + "\n"
+            + "  Model\n"
+            + "    strutstool new model [model name] [<parameter:dataType> ...]\n"
+            + "    Ex.: strutstool new model User name:string bornIn:date\n"
             + "\n";
 
     // MESSAGES

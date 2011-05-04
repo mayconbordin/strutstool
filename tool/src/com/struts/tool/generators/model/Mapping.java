@@ -2,11 +2,10 @@ package com.struts.tool.generators.model;
 
 import com.struts.tool.Messages;
 import com.struts.tool.StrutsToolException;
-import com.struts.tool.builder.XmlBuilder;
+import com.struts.tool.builder.MarkUpBuilder;
 import com.struts.tool.builder.components.Attribute;
 import com.struts.tool.builder.components.Type;
-import com.struts.tool.builder.components.XmlAttribute;
-import com.struts.tool.builder.components.XmlTag;
+import com.struts.tool.builder.components.MarkUpTag;
 import com.struts.tool.generators.Model;
 import com.struts.tool.generators.Project;
 import com.struts.tool.helpers.DirectoryHelper;
@@ -23,7 +22,7 @@ import java.io.IOException;
  */
 public class Mapping {
     private Model model;
-    private XmlTag mapping;
+    private MarkUpTag mapping;
     
     private String mappingRootPath;
     private String templatePath;
@@ -71,12 +70,12 @@ public class Mapping {
     }
 
     private void makeMapping() {
-        mapping = new XmlTag("class", null);
+        mapping = new MarkUpTag("class", null);
         mapping.addAttribute("name", entityPackage + model.getEntityName());
         mapping.addAttribute("table", StringHelper.lcfirst(model.getEntityName()));
         
         for (Attribute attr : model.getAttributes()) {
-            XmlTag property = null;
+            MarkUpTag property = null;
             
             // Identity mapping
             if (attr.getName().equals("id")) {
@@ -104,20 +103,20 @@ public class Mapping {
         }
     }
 
-    private XmlTag mapOneToMany(Attribute attr) {
-        XmlTag collection = new XmlTag(attr.getType().getName());
+    private MarkUpTag mapOneToMany(Attribute attr) {
+        MarkUpTag collection = new MarkUpTag(attr.getType().getName());
         collection.addAttribute("cascade", "all-delete-orphan");
         collection.addAttribute("inverse", "true");
         collection.addAttribute("lazy", "true");
         collection.addAttribute("name", StringHelper.lcfirst(attr.getName()));
-        collection.addAttribute("table", StringHelper.lcfirst(model.getEntityName()));
+        collection.addAttribute("table", StringHelper.lcfirst(attr.getRelatedWith()));
 
 
-        XmlTag key = new XmlTag("key");
-        key.addAttribute("column", "id");
+        MarkUpTag key = new MarkUpTag("key");
+        key.addAttribute("column", StringHelper.lcfirst(model.getEntityName()));
 
         String className = entityPackage + attr.getRelatedWith();
-        XmlTag oneToMany = new XmlTag("one-to-many");
+        MarkUpTag oneToMany = new MarkUpTag("one-to-many");
         oneToMany.addAttribute("class", className);
 
         collection.addChilrens(key, oneToMany);
@@ -125,11 +124,11 @@ public class Mapping {
         return collection;
     }
 
-    private XmlTag mapManyToOne(Attribute attr) {
+    private MarkUpTag mapManyToOne(Attribute attr) {
         String columnName = StringHelper.lcfirst(attr.getName());
         String className = entityPackage + attr.getType().getJavaName();
         
-        XmlTag manyToOne = new XmlTag("many-to-one");
+        MarkUpTag manyToOne = new MarkUpTag("many-to-one");
         manyToOne.addAttribute("class", className);
         manyToOne.addAttribute("column", columnName);
         manyToOne.addAttribute("name", columnName);
@@ -137,14 +136,14 @@ public class Mapping {
         return manyToOne;
     }
 
-    private XmlTag mapIdentity(Attribute attr) {
+    private MarkUpTag mapIdentity(Attribute attr) {
         // Id Tag
-        XmlTag id = new XmlTag("id");
+        MarkUpTag id = new MarkUpTag("id");
         id.addAttribute("name", attr.getName());
         id.addAttribute("column", attr.getName());
 
         // Generator tag
-        XmlTag generator = new XmlTag("generator", id);
+        MarkUpTag generator = new MarkUpTag("generator", id);
         generator.addAttribute("class", "sequence");
 
         // Param tag
@@ -152,7 +151,7 @@ public class Mapping {
                             + "_"
                             + attr.getName().toLowerCase() + "_seq";
         
-        XmlTag param = new XmlTag("param", generator);
+        MarkUpTag param = new MarkUpTag("param", generator);
         param.setContent(paramContent);
         param.addAttribute("name", "sequence");
 
@@ -163,8 +162,8 @@ public class Mapping {
         return id;
     }
 
-    private XmlTag mapProperty(Attribute attr) {
-        XmlTag property = new XmlTag("property");
+    private MarkUpTag mapProperty(Attribute attr) {
+        MarkUpTag property = new MarkUpTag("property");
         property.addAttribute("name", attr.getName());
         property.addAttribute("column", attr.getName());
         property.addAttribute("not-null", "true");
@@ -185,7 +184,7 @@ public class Mapping {
 
             String mapTag = "<!-- generator:mapping -->\n";
 
-            XmlBuilder builder = new XmlBuilder(mapping);
+            MarkUpBuilder builder = new MarkUpBuilder(mapping);
             String content = mapTag + builder.build();
 
             // Replace the tags

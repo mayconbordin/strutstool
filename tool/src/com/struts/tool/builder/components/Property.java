@@ -4,23 +4,21 @@ package com.struts.tool.builder.components;
  *
  * @author maycon
  */
-public class XmlAttribute {
-    private String name;
+public class Property {
+    private String key;
     private String value;
 
-    public XmlAttribute() {}
-
-    public XmlAttribute(String name, String value) {
-        this.name = name;
+    public Property(String key, String value) {
+        this.key = key;
         this.value = value;
     }
 
-    public String getName() {
-        return name;
+    public String getKey() {
+        return key;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getValue() {

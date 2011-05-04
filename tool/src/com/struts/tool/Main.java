@@ -23,11 +23,13 @@ public class Main {
             return;
         }
 
-        if (args.length > 3 && args[0].equals("new")) {
+        if (args[0].equals("new")) {
+            
             // Project
             if (args[1].equals("project")) {
                 try {
-                    tool.newProject(args[2], args[3]);
+                    if (args.length > 3) tool.newProject(args[2], args[3]);
+                    else out.put(Messages.usage, "");
                 } catch (StrutsToolException ex) {
                     out.put(" error  " + ex.getMessage());
                     try {
@@ -41,19 +43,30 @@ public class Main {
             // Controller
             else if (args[1].equals("controller")) {
                 try {
-                    tool.newController(args);
+                    if (args.length > 2) tool.newController(args);
+                    else out.put(Messages.usage, "");
+                } catch (StrutsToolException ex) {
+                    out.put(" error  " + ex.getMessage());
+                }
+            }
+
+            // Model
+            else if (args[1].equals("model")) {
+                try {
+                    if (args.length > 3) tool.newModel(args);
+                    else out.put(Messages.usage, "");
                 } catch (StrutsToolException ex) {
                     out.put(" error  " + ex.getMessage());
                 }
             }
         }
 
-        if (args.length > 2 && args[0].equals("scaffold")) {
+        if (args[0].equals("scaffold")) {
             try {
-                tool.scaffold(args);
+                if (args.length > 2) tool.scaffold(args);
+                else out.put(Messages.usage, "");
             } catch (StrutsToolException ex) {
                 out.put(" error  " + ex.getMessage());
-                out.put(" cause  " + ex.getCause().getMessage());
             }
         }
     }

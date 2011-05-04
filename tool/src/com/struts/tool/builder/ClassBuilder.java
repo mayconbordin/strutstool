@@ -38,18 +38,18 @@ public class ClassBuilder {
         buildMethods();
 
         return packageStr
-               + "/* generator:imports */\n"
                + importsStr
+               + "// generator:imports\n"
                + "\n"
                + classAnnotations
                + className
                + extendStr
                + implementsStr
                + " {\n"
-               + "    /* generator:attributes */\n"
                + attributesStr
-               + "    /* generator:methods */\n"
+                + "    // generator:attributes\n"
                + methodsStr
+               + "    // generator:methods\n"
                + "}";
     }
 
@@ -217,13 +217,24 @@ public class ClassBuilder {
                     obj.getImports().addAll(ann.getImportStr());
                 }
             }
+
+            // Attribute itself
             attributesStr += "    " + attr.getAccessType() + " "
                            + attr.getType().getJavaName()
-                           + " " + attr.getName() + ";\n\n";
+                           + " " + attr.getName();
+
+            if (attr.getType().getValue() != null) {
+                attributesStr += " = " + attr.getType().getValue();
+            }
+
+            attributesStr += ";\n\n";
 
             // Includes other data types to import
             if (attr.getType().getImportPath() != null) {
                 obj.getImports().add(attr.getType().getImportPath());
+            }
+            if (attr.getType().getValueImport() != null) {
+                obj.getImports().add(attr.getType().getValueImport());
             }
         }
 

@@ -1,5 +1,8 @@
 package com.struts.tool.builder.components;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author maycon
@@ -10,6 +13,8 @@ public class Type {
     private String importPath;
     private String hibernateName;
     private String classification;
+    private String value;
+    private String valueImport;
 
     public static final String VOID = "void";
     public static final String NUMERIC = "numeric";
@@ -39,6 +44,16 @@ public class Type {
         this.importPath = importPath;
         this.hibernateName = hibernateName;
         this.classification = classification;
+    }
+
+    public Type(String name, String javaName, String importPath, String hibernateName, String classification, String value, String valueImport) {
+        this.name = name;
+        this.javaName = javaName;
+        this.importPath = importPath;
+        this.hibernateName = hibernateName;
+        this.classification = classification;
+        this.value = value;
+        this.valueImport = valueImport;
     }
 
     public String getHibernateName() {
@@ -79,5 +94,30 @@ public class Type {
 
     public void setClassification(String classification) {
         this.classification = classification;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public String getValueImport() {
+        return valueImport;
+    }
+
+    public void setValueImport(String valueImport) {
+        this.valueImport = valueImport;
+    }
+
+    @Override
+    public Object clone() {
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException ex) {
+            return null;
+        }
     }
 }

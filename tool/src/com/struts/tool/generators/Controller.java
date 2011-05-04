@@ -2,7 +2,12 @@ package com.struts.tool.generators;
 
 import com.struts.tool.Messages;
 import com.struts.tool.StrutsToolException;
+import com.struts.tool.builder.ClassBuilder;
 import com.struts.tool.builder.components.Attribute;
+import com.struts.tool.builder.components.ClassObj;
+import com.struts.tool.builder.components.Method;
+import com.struts.tool.builder.components.Type;
+import com.struts.tool.builder.components.TypeCollection;
 import com.struts.tool.generators.controller.BeanFactory;
 import com.struts.tool.generators.controller.Properties;
 import com.struts.tool.generators.controller.StrutsConfig;
@@ -30,6 +35,8 @@ public class Controller {
 
     private MessageOutput out;
 
+    // Constructors ============================================================
+    
     public Controller(String entityName, Project project, List<Attribute> attributes) {
         this.entityName = entityName;
         this.project = project;
@@ -42,6 +49,8 @@ public class Controller {
         this.project = project;
         this.out = MessageOutputFactory.getTerminalInstance();
     }
+
+    // Public methods ==========================================================
 
     public void createModelController() throws StrutsToolException {
         loadPaths();
@@ -104,15 +113,65 @@ public class Controller {
     private void makeModelController() throws StrutsToolException {
         try {
             String refControllerPath = templatePath + "/ModelController";
-
             String controllerClass = FileHelper.toString(refControllerPath);
 
+            String packages = project.getPackages().replace("/", ".");
+
+            String importStr = "// generator:imports\n";
+            String attributeStr = "// generator:attributes\n";
+            String loaderStr = "// generator:loaders\n";
+            String methodStr = "// generator:accessors\n";
+
+            for (Attribute attr : attributes) {
+                if (attr.getType().getClassification().equals(Type.ENTITY)) {
+                    // Import entity class
+                    importStr += "import " + packages + ".model.entity."
+                               + attr.getType().getJavaName() + ";\n";
+
+                    // Import service implementation class
+                    importStr += "import " + packages + ".model.service."
+                               + attr.getType().getJavaName() + "ServiceImpl;\n";
+
+                    // Import java.util.List
+                    importStr += "import java.util.List;\n";
+
+                    attributeStr += "    private "
+                                  + "List<" + attr.getType().getJavaName() + "> "
+                                  + StringHelper.lcfirst(attr.getType().getJavaName())
+                                  + "List;\n";
+
+                    // Getter and Setter
+                    String methodType = "List<" + attr.getType().getJavaName() + ">";
+                    String methodAttr = StringHelper.lcfirst(attr.getType().getJavaName()) + "List";
+
+                    methodStr += "    public " + methodType + " get"
+                              + attr.getType().getJavaName() + "List() {\n"
+                              + "        return "
+                              + methodAttr + ";\n"
+                              + "    }\n\n"
+                              + "    public void set" + attr.getType().getJavaName()
+                              + "List(" + methodType + " " + methodAttr + ") {\n"
+                              + "        this." + methodAttr + " = " + methodAttr + ";\n"
+                              + "    }\n";
+
+                    // Loaders
+                    loaderStr += "            "
+                              + methodAttr + " = new "
+                              + attr.getType().getJavaName() + "ServiceImpl()"
+                              + ".findAll();\n";
+                }
+            }
+
             // Replace the tags
-            controllerClass = controllerClass.replace("<<packages>>", 
-                    project.getPackages().replace("/", "."));
+            controllerClass = controllerClass.replace("<<packages>>", packages);
             controllerClass = controllerClass.replace("<<entityName>>", entityName);
             controllerClass = controllerClass.replace("<<entityNameLower>>",
                     StringHelper.lcfirst(entityName));
+
+            controllerClass = controllerClass.replace("// generator:imports", importStr);
+            controllerClass = controllerClass.replace("// generator:attributes", attributeStr);
+            controllerClass = controllerClass.replace("// generator:loaders", loaderStr);
+            controllerClass = controllerClass.replace("// generator:accessors", methodStr);
 
             String newControllerPath = controllerRootPath + "/"
                                      + entityName + "Controller.java";
@@ -131,13 +190,21 @@ public class Controller {
 
             String controllerClass = FileHelper.toString(refControllerPath);
 
-            String actionsStr = "\t// generator:actions\n\n";
+            ClassObj controller = new ClassObj();
+            String actionsStr = "    // generator:actions\n\n";
+            
             for (String action : actions) {
-                actionsStr += "\tpublic String "
-                            + StringHelper.lcfirst(action) +"() {\n"
-                            + "\t\treturn SUCCESS;\n"
-                            + "\t}\n\n";
+                Method method = new Method();
+                method.setAccessType(ClassObj.PUBLIC);
+                method.setName(StringHelper.lcfirst(action));
+                method.setReturnType(TypeCollection.get("string"));
+                method.setContent("return SUCCESS;");
+                controller.getMethods().add(method);
             }
+
+            // Build only methods for controller
+            ClassBuilder builder = new ClassBuilder(controller);
+            actionsStr += builder.buildMethods();
 
             // Replace the tags
             controllerClass = controllerClass.replace("<<packages>>",

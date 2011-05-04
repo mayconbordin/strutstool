@@ -10,6 +10,7 @@ import com.struts.tool.generators.View;
 import com.struts.tool.generators.model.Entity;
 import com.struts.tool.helpers.IntegerHelper;
 import com.struts.tool.helpers.ListHelper;
+import com.struts.tool.helpers.StringHelper;
 import com.struts.tool.output.MessageOutput;
 import com.struts.tool.output.MessageOutputFactory;
 import java.util.ArrayList;
@@ -46,12 +47,9 @@ public class StrutsTool {
         project = Project.getInstance();
 
         if (project != null) {
-            List<Attribute> attributes = extractAttributes(args, true);
+            List<Attribute> attributes = extractAttributes(args, true, 2);
 
-            String entityName = "";
-            if (args.length > 1) {
-                entityName = args[1];
-            }
+            String entityName = StringHelper.ucfirst(args[1]);
 
             // Create the controllers
             Controller controller = new Controller(entityName, project, attributes);
@@ -64,12 +62,62 @@ public class StrutsTool {
             // Create the view
             View view = new View(entityName, project, attributes);
             view.createFromModel();
+
+            out.put("  done");
+        } else {
+            throw new StrutsToolException(Messages.goToRootOfApp);
+        }
+    }
+    
+    // Controller ==============================================================
+    public void newController(String[] args) throws StrutsToolException {
+        project = Project.getInstance();
+        
+        if (project != null) {
+            String entityName = StringHelper.ucfirst(args[2]);
+            
+            Controller controller = new Controller(entityName, project);
+            controller.createController(extractActions(args), true);
+
+            out.put("  done");
         } else {
             throw new StrutsToolException(Messages.goToRootOfApp);
         }
     }
 
-    private List<Attribute> extractAttributes(String[] args, boolean addId) throws StrutsToolException {
+    // Model ===================================================================
+    public void newModel(String[] args) throws StrutsToolException {
+        project = Project.getInstance();
+
+        if (project != null) {
+            List<Attribute> attributes = extractAttributes(args, true, 3);
+
+            String entityName = StringHelper.ucfirst(args[2]);
+
+            // Create the model
+            Model model = new Model(entityName, project, attributes);
+            model.createModel(true, true, true);
+
+            out.put("  done");
+        } else {
+            throw new StrutsToolException(Messages.goToRootOfApp);
+        }
+    }
+
+    // Utils ===================================================================
+
+    private List<String> extractActions(String[] args) {
+        List<String> actions = new ArrayList();
+
+        for (int i = 3; i < args.length; i++) {
+            actions.add( args[i] );
+        }
+
+        ListHelper.removeDuplicate(actions);
+        return actions;
+    }
+
+    private List<Attribute> extractAttributes(String[] args, boolean addId, int start) throws StrutsToolException {
         List<Attribute> attributes = new ArrayList();
         if (addId) {
             attributes.add(new Attribute("id", TypeCollection.get("int")));
@@ -77,7 +125,7 @@ public class StrutsTool {
 
         String[] temp;
 
-        for (int i = 2; i < args.length; i++) {
+        for (int i = start; i < args.length; i++) {
             temp = args[i].split(":");
             Attribute attr = new Attribute();
 
@@ -92,21 +140,27 @@ public class StrutsTool {
 
                 Type dt = TypeCollection.get(temp[1]);
                 if (dt == null) {
-                    if (Entity.exists(temp[1], project.getPackages())) {
+                    //if (Entity.exists(temp[1], project.getPackages())) {
                         dt = new Type(temp[1].toLowerCase(), temp[1], null, null, "entity");
-                    } else {
-                        throw new StrutsToolException(Messages.invalidDataType
-                            .replace("{type}", temp[1]));
-                    }
+                    //} else {
+                        //throw new StrutsToolException(Messages.invalidDataType
+                            //.replace("{type}", temp[1]));
+                    //}
                 }
                 attr.setType(dt);
             }
-                
+
             if (temp.length > 2) {
                 if (IntegerHelper.isInteger(temp[2])) {
                     attr.setSize(Integer.parseInt(temp[2]));
                 } else {
                     attr.setRelatedWith(temp[2]);
+
+                    if (attr.getType().getClassification().equals(Type.COLLECTION)) {
+                        attr.getType().setJavaName(
+                                attr.getType().getJavaName() + "<"
+                                + StringHelper.ucfirst(temp[2]) + ">" );
+                    }
                 }
             }
 
@@ -121,21 +175,4 @@ public class StrutsTool {
         return attributes;
     }
 
-    // Controller ==============================================================
-    public void newController(String[] args) throws StrutsToolException {
-        project = Project.getInstance();
-        Controller controller = new Controller(args[2], project);
-        controller.createController(extractActions(args), true);
-    }
-
-    private List<String> extractActions(String[] args) {
-        List<String> actions = new ArrayList();
-        
-        for (int i = 3; i < args.length; i++) {
-            actions.add( args[i] );
-        }
-
-        ListHelper.removeDuplicate(actions);
-        return actions;
-    }
 }

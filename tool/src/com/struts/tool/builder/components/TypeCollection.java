@@ -47,8 +47,7 @@ public class TypeCollection {
         types.put("blob", new Type("blob", "Blob", "java.sql.Blob", "blob", "blob"));
 
         //Collection
-        types.put("list", new Type("list", "List", "java.util.List", null, "collection"));
-        types.put("set", new Type("set", "Set", "java.util.Set", null, "collection"));
+        types.put("set", new Type("set", "Set", "java.util.Set", null, "collection", "new HashSet()", "java.util.HashSet"));
     }
 
     public static Type get(String key) {
