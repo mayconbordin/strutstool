@@ -4,7 +4,7 @@
 <%@taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
 <%@taglib uri="http://htmlcompressor.googlecode.com/taglib/compressor" prefix="compress" %>
 
-<compress:html enabled="false"
+<compress:html enabled="true"
                compressJavaScript="true"
                jsCompressor="closure"
                removeComments="true"

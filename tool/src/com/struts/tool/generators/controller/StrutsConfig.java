@@ -105,7 +105,7 @@ public class StrutsConfig {
     private void makeConfig(List<String> actions, boolean fromBeanFactory, boolean tilesTemplate)
             throws StrutsToolException {
         try {
-            String refStrutsConfigPath = templatePath + "/StrutsModelConfig";
+            String refStrutsConfigPath = templatePath + "/StrutsConfig";
 
             String strutsConfig = FileHelper.toString(refStrutsConfigPath);
 
@@ -131,22 +131,22 @@ public class StrutsConfig {
                 String resultPage = "/WEB-INF/"
                         + StringHelper.lcfirst(controller.getEntityName());
                 if (tilesTemplate) {
-                    resultPage = controller.getEntityName()
-                            + StringHelper.lcfirst(action);
+                    resultPage = StringHelper.lcfirst(controller.getEntityName())
+                            + StringHelper.ucfirst(action);
                 }
                 
-                actionsStr += "\t\t<!-- " + StringHelper.ucfirst(action) + " -->\n"
-                            + "\t\t<action name=\""
+                actionsStr += "<!-- " + StringHelper.ucfirst(action) + " -->\n"
+                            + "        <action name=\""
                             + StringHelper.lcfirst(action)+"\" method=\""
                             + StringHelper.lcfirst(action)+"\" "
                             + "class=\""+controllerStr+"\">\n"
-                            + "\t\t\t<result name=\"success\""+tileAttr+">\n"
+                            + "            <result name=\"success\""+tileAttr+">\n"
                             + resultPage + "</result>\n"
-                            + "\t\t\t<result name=\"error\""+tileAttr+">"
+                            + "            <result name=\"error\""+tileAttr+">"
                             + resultPage+"</result>\n"
-                            + "\t\t\t<result name=\"input\""+tileAttr+">"
+                            + "            <result name=\"input\""+tileAttr+">"
                             + resultPage+"</result>\n"
-                            + "\t\t</action>\n\n";
+                            + "        </action>\n\n";
             }
 
             // Replace the tags

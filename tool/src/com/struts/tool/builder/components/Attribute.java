@@ -12,7 +12,7 @@ public class Attribute {
     private Type type;
     private String accessType;
     private ExtArrayList<Annotation> annotations = new ExtArrayList();
-    private Integer size;
+    private Integer size = 0;
     private String relatedWith;
 
     public Attribute() {}

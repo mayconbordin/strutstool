@@ -2,6 +2,7 @@ package com.struts.tool.generators;
 
 import com.struts.tool.Messages;
 import com.struts.tool.StrutsToolException;
+import com.struts.tool.helpers.DirectoryHelper;
 import com.struts.tool.helpers.FileHelper;
 import com.struts.tool.helpers.ZipHelper;
 import com.struts.tool.output.MessageOutput;
@@ -57,7 +58,7 @@ public class Project {
     }
 
     public void create() throws StrutsToolException {
-        out.put("create  " + name);
+        out.put("create  " + name + "/");
         
         File projectDir = new File(name);
         if (!projectDir.mkdir()) {
@@ -68,7 +69,9 @@ public class Project {
 
         out.put(" unzip  resources/project.zip");
 
-        File projectFiles = new File("resources/project.zip");
+        File projectFiles = new File(DirectoryHelper.getInstallationDirectory()
+                + "/resources/project.zip");
+
         try {
             zip.unzip(projectFiles, projectDir);
         } catch (IOException ex) {
@@ -77,7 +80,9 @@ public class Project {
 
         out.put(" unzip  resources/lib.zip");
 
-        File libFiles = new File("resources/lib.zip");
+        File libFiles = new File(DirectoryHelper.getInstallationDirectory()
+                + "/resources/lib.zip");
+
         try {
             zip.unzip(libFiles, projectDir);
         } catch (IOException ex) {

@@ -109,12 +109,20 @@ public class Entity {
                     && !method.getReturnType().getClassification().equals(Type.COLLECTION)) {
 
                 // Add annotations to method
-                method.getAnnotations().addAll(
-                        getAnnotationFactory().getNotNull(),
-                        getAnnotationFactory().getXssFilter());
-
+                method.getAnnotations().add(getAnnotationFactory().getNotNull());
+                
                 // Get respective attribute
-                Attribute getterAttr = entity.getAttributes().get("id");
+                String attrName = StringHelper.lcfirst( method.getName().replace("get", "") );
+                Attribute getterAttr = entity.getAttributes().get(attrName);
+
+                // Entity reference do not validate through xss filter
+                if (!getterAttr.getType().getClassification().equals(Type.ENTITY)) {
+                    method.getAnnotations().add(getAnnotationFactory().getXssFilter());
+                }
+
+                if (getterAttr.getSize() == null) {
+                    System.out.println("TYPE NULL");
+                }
 
                 // If method attribute is character and size is set, add lenght validator
                 if (getterAttr.getType().getClassification().equals(Type.CHARACTER)
