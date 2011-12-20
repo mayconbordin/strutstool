@@ -22,6 +22,7 @@ Command: <font color="red">*`$ ./strutstool new project `<font color="blue">`[pr
 ### Entity Scaffolding
 
 What it generates:
+
 * Model entity (POJO)
 * POJO basic validation (AntiXSS and NotNull)
 * Lucene Search Annotations in POJO <font color="red">(new)</font>
